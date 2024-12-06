@@ -1,22 +1,15 @@
 import { CalendarCheck, CircleUser, Dock, Users } from 'lucide-react';
 
 export const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   projects: [
     {
       title: 'Працівники',
-      url: '#',
+      url: '/dashboard/employees',
       icon: Users,
-      isActive: false,
-      items: [],
     },
     {
       title: 'Послуги',
-      url: '#',
+      url: '/dashboard/services',
       icon: Dock,
     },
     {
@@ -26,7 +19,7 @@ export const data = {
     },
     {
       title: 'Розклад',
-      url: '#',
+      url: '/dashboard/schedule',
       icon: CalendarCheck,
     },
   ],
