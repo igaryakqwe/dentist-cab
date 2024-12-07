@@ -1,0 +1,23 @@
+import { z } from 'zod';
+
+export const EmployeeSchema = z.object({
+  id: z.string(),
+  name: z.string().nullable(),
+  surname: z.string().nullable(),
+  position: z.string().nullable(),
+});
+
+export type Employee = z.infer<typeof EmployeeSchema>;
+
+export interface ModifiedEmployee {
+  id: string;
+  fullName: string;
+  email: string;
+  position: string;
+}
+
+export interface EmployeeFilter {
+  search?: string;
+  page: number;
+  rowsPerPage: number;
+}
