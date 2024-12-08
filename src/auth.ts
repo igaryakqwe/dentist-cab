@@ -3,6 +3,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
 import Credentials from '@auth/core/providers/credentials';
 import { hashPassword } from '@/utils/hashPassword';
+import Google from '@auth/core/providers/google';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -11,6 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/error',
   },
   providers: [
+    Google,
     Credentials({
       credentials: {
         email: { type: 'text' },

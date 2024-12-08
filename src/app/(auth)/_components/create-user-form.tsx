@@ -13,9 +13,9 @@ import {
 } from '@components/ui/form';
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
-import GithubSignInButton from '@/app/(auth)/_components/github-auth-button';
 import * as z from 'zod';
 import { api } from '@/lib/trpc/client';
+import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -120,7 +120,7 @@ const CreateUserForm = () => {
           </span>
         </div>
       </div>
-      <GithubSignInButton />
+      <GoogleSignInButton />
     </>
   );
 };

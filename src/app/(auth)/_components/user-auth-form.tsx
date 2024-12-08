@@ -11,11 +11,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
-import { useToast } from '@/hooks/use-toast';
+import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -108,7 +106,7 @@ export default function UserAuthForm() {
           </span>
         </div>
       </div>
-      <GithubSignInButton />
+      <GoogleSignInButton />
     </>
   );
 }
