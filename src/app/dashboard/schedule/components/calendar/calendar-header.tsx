@@ -1,19 +1,19 @@
-import {
-  Search,
-  HelpCircle,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
+import { ToggleGroup, ToggleGroupItem } from '@components/ui/toggle-group';
+import { CalendarView } from '@/types/calendar';
+import { useQueryState } from 'nuqs';
+import { useEffect } from 'react';
 
 interface CalendarHeaderProps {
   currentDate: Date;
-  view: 'day' | 'week' | 'month';
-  onViewChange: (view: 'day' | 'week' | 'month') => void;
+  view: CalendarView;
+  onViewChange: (view: CalendarView) => void;
   onNavigate: (direction: 'prev' | 'next') => void;
+  onClickToday: () => void;
+  search: string | null;
+  setSearch: (search: string | null) => void;
 }
 
 export function CalendarHeader({
@@ -21,7 +21,26 @@ export function CalendarHeader({
   view,
   onViewChange,
   onNavigate,
+  onClickToday,
+  search,
+  setSearch,
 }: CalendarHeaderProps) {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      setSearch(null);
+      return;
+    }
+    setSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    if (search === '') {
+      setSearch(null);
+      return;
+    }
+    setSearch(search || null);
+  }, []);
+
   return (
     <header className="flex items-center justify-between px-2 pb-2 bg-background rounded-tr-lg">
       <div className="flex items-center gap-4">
@@ -50,14 +69,23 @@ export function CalendarHeader({
         >
           <ChevronRight />
         </Button>
-        <Button variant="secondary" size="sm" className="text-xs">
+        <Button
+          onClick={onClickToday}
+          variant="secondary"
+          size="sm"
+          className="text-xs"
+        >
           Сьогодні
         </Button>
       </div>
       <div className="flex items-center gap-2">
         <div className="relative w-40">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-          <Input placeholder="Пошук" className="pl-7 h-7 text-xs" />
+          <Input
+            placeholder="Пошук"
+            onChange={handleSearch}
+            className="pl-7 h-7 text-xs"
+          />
         </div>
         <ToggleGroup
           type="single"

@@ -1,7 +1,8 @@
 import { ModifiedEmployee } from '@/types/employee';
-import { Filter } from '@/types';
+import { Filter, ScheduleFilters } from '@/types';
 import { Service } from '@/types/service';
 import { Patient } from '@/types/patient';
+import { CalendarEvent } from '@/types/calendar';
 
 export const filterEmployees = (
   employees: ModifiedEmployee[],
@@ -66,4 +67,26 @@ export const filterPatients = (
   const endIndex = startIndex + filters.rowsPerPage;
 
   return filteredPatients.slice(startIndex, endIndex);
+};
+
+export const filterEvents = (
+  events: CalendarEvent[],
+  filters: ScheduleFilters
+): CalendarEvent[] => {
+  if (events.length === 0) return [];
+
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch =
+      !filters.search ||
+      event.title.toLowerCase().includes(filters.search.toLowerCase());
+
+    const matchesDoctors =
+      !filters.doctors ||
+      filters.doctors.length === 0 ||
+      filters.doctors.includes(event.doctorId);
+
+    return matchesSearch && matchesDoctors;
+  });
+
+  return filteredEvents;
 };

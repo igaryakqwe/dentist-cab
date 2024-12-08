@@ -1,25 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalendarHeader } from './calendar-header';
 import { CalendarSidebar } from './calendar-sidebar';
 import { WeekView } from './week-view';
-import type {
-  CalendarEvent,
-  CalendarView,
-  CalendarCategory,
-} from '@/types/calendar';
-
-const categories: CalendarCategory[] = [
-  { id: '1', name: 'Work', color: 'bg-blue-500' },
-  { id: '2', name: 'Personal', color: 'bg-green-500' },
-  { id: '3', name: 'Education', color: 'bg-yellow-500' },
-];
+import type { CalendarView } from '@/types/calendar';
+import { api } from '@/lib/trpc/client';
+import useScheduleStore from '@/hooks/filters/use-schedule-store';
+import { useQueryState } from 'nuqs';
 
 export function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [search, setSearch] = useQueryState('q');
+  const [doctors, setDoctors] = useQueryState<string[]>('doctors', {
+    defaultValue: [],
+    shallow: true,
+    parse: (value) => (value ? JSON.parse(value) : []),
+    serialize: (value) => JSON.stringify(value),
+  });
+
   const [view, setView] = useState<CalendarView>('week');
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const { events, setEvents } = useScheduleStore();
+
+  const { data, isLoading } = api.schedule.getEvents.useQuery();
+
+  useEffect(() => {
+    if (events && !data) return;
+    setEvents(data || []);
+  }, [data, events]);
 
   const handleNavigate = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
@@ -27,27 +35,12 @@ export function Calendar() {
       newDate.setDate(currentDate.getDate() + (direction === 'next' ? 1 : -1));
     } else if (view === 'week') {
       newDate.setDate(currentDate.getDate() + (direction === 'next' ? 7 : -7));
-    } else {
-      newDate.setMonth(
-        currentDate.getMonth() + (direction === 'next' ? 1 : -1)
-      );
     }
     setCurrentDate(newDate);
   };
 
-  const handleEventAdd = (newEvent: Omit<CalendarEvent, 'id'>) => {
-    setEvents([
-      ...events,
-      { ...newEvent, id: Math.random().toString(36).substr(2, 9) },
-    ]);
-  };
-
-  const handleEventUpdate = (updatedEvent: CalendarEvent) => {
-    setEvents(
-      events.map((event) =>
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
+  const handleClickToday = () => {
+    setCurrentDate(new Date());
   };
 
   const handleDateChange = (date: Date) => {
@@ -58,9 +51,9 @@ export function Calendar() {
     <div className="flex h-screen bg-background text-foreground rounded-lg overflow-hidden mr-3">
       <CalendarSidebar
         currentDate={currentDate}
-        categories={categories}
-        onCategoryToggle={() => {}}
         onDateChange={handleDateChange}
+        doctors={doctors}
+        setDoctors={setDoctors}
       />
       <div className="flex-1 flex flex-col">
         <CalendarHeader
@@ -68,12 +61,15 @@ export function Calendar() {
           view={view}
           onViewChange={setView}
           onNavigate={handleNavigate}
+          onClickToday={handleClickToday}
+          search={search}
+          setSearch={setSearch}
         />
         <WeekView
-          events={events}
           currentDate={currentDate}
-          onEventAdd={handleEventAdd}
-          onEventUpdate={handleEventUpdate}
+          isLoading={isLoading}
+          search={search}
+          doctors={doctors}
         />
       </div>
     </div>

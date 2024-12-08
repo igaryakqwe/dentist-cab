@@ -6,3 +6,8 @@ export interface Filter {
   page: number;
   rowsPerPage: number;
 }
+
+export interface ScheduleFilters {
+  search: string | null;
+  doctors: string[] | null;
+}

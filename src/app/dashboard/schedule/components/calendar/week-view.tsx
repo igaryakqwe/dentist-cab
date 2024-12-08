@@ -1,27 +1,46 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@components/ui/button';
 import type { CalendarEvent } from '@/types/calendar';
 import { EventForm } from './event-form';
+import { getTime } from '@/utils/date-utils';
+import { api } from '@/lib/trpc/client';
+import { useToast } from '@/hooks/use-toast';
+import useScheduleStore from '@/hooks/filters/use-schedule-store';
+import { Loader } from './loader';
+import { filterEvents } from '@/utils/filter-utils';
+import { useSearchParams } from 'next/navigation';
 
 interface WeekViewProps {
-  events: CalendarEvent[];
   currentDate: Date;
-  onEventAdd: (event: Omit<CalendarEvent, 'id'>) => void;
-  onEventUpdate: (event: CalendarEvent) => void;
+  isLoading: boolean;
+  search: string | null;
+  doctors: string[];
 }
 
 export function WeekView({
-  events,
   currentDate,
-  onEventAdd,
-  onEventUpdate,
+  isLoading,
+  search,
+  doctors,
 }: WeekViewProps) {
+  const { toast } = useToast();
+
+  const filters = { search, doctors: doctors || [] };
+
+  const { events, updateEvent, addEvent, deleteEvent } = useScheduleStore();
+
+  const filteredEvents = filterEvents(events || [], filters);
+
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
+
+  const addEventMutation = api.schedule.addEvent.useMutation();
+  const updateEventMutation = api.schedule.updateEvent.useMutation();
+  const deleteEventMutation = api.schedule.deleteEvent.useMutation();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -33,10 +52,10 @@ export function WeekView({
   const today = new Date();
 
   const getEventStyle = (event: CalendarEvent) => {
-    const startHour = parseInt(event.startTime.split(':')[0]);
-    const startMinute = parseInt(event.startTime.split(':')[1]);
-    const endHour = parseInt(event.endTime.split(':')[0]);
-    const endMinute = parseInt(event.endTime.split(':')[1]);
+    const startHour = event.startDate.getHours();
+    const startMinute = event.startDate.getMinutes();
+    const endHour = event.endDate.getHours();
+    const endMinute = event.endDate.getMinutes();
 
     const top = (startHour + startMinute / 60) * 40;
     const height =
@@ -63,16 +82,74 @@ export function WeekView({
 
   const handleEventSave = (eventData: Omit<CalendarEvent, 'id'>) => {
     if (selectedEvent) {
-      onEventUpdate({ ...eventData, id: selectedEvent.id });
+      updateEventMutation.mutate(
+        { ...eventData, id: selectedEvent.id },
+        {
+          onSuccess: () => {
+            updateEvent({ ...eventData, id: selectedEvent.id });
+            toast({
+              title: 'Подію успішно оновлено',
+            });
+            window.location.reload();
+          },
+          onError: (error) => {
+            toast({
+              title: 'Помилка',
+              description: error.message,
+              variant: 'destructive',
+            });
+          },
+        }
+      );
     } else {
-      onEventAdd(eventData);
+      addEventMutation.mutate(eventData, {
+        onSuccess: () => {
+          addEvent(eventData);
+          toast({
+            title: 'Подію успішно додано',
+          });
+          window.location.reload();
+        },
+        onError: (error) => {
+          toast({
+            title: 'Помилка',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      });
     }
     setIsEventFormOpen(false);
     setSelectedEvent(null);
   };
 
+  const handleEventDelete = (eventId: string) => {
+    if (!selectedEvent) return;
+    deleteEventMutation.mutate(
+      { id: selectedEvent.id },
+      {
+        onSuccess: () => {
+          deleteEvent(eventId);
+          toast({
+            title: 'Подію успішно видалено',
+          });
+          window.location.reload();
+        },
+        onError: (error) => {
+          toast({
+            title: 'Помилка',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      }
+    );
+    setIsEventFormOpen(false);
+    setSelectedEvent(null);
+  };
+
   return (
-    <div className="flex-1 border overflow-auto rounded-[6px] bg-background">
+    <div className="flex-1 relative max-h-[85vh] border overflow-auto rounded-[6px] bg-background">
       <div className="relative grid grid-rows-1 border-b grid-cols-[auto_repeat(7,1fr)]">
         <div className="w-12" />
         {days.map((date) => (
@@ -111,9 +188,10 @@ export function WeekView({
                 onClick={() => handleCellClick(date, hour)}
               />
             ))}
-            {events
+            {filteredEvents
               .filter(
-                (event) => event.date.toDateString() === date.toDateString()
+                (event) =>
+                  event.startDate.toDateString() === date.toDateString()
               )
               .map((event) => (
                 <div
@@ -125,12 +203,13 @@ export function WeekView({
                   <div className="font-medium text-primary truncate">
                     {event.title}
                   </div>
-                  <div className="text-muted-foreground truncate">{`${event.startTime} - ${event.endTime}`}</div>
+                  <div className="text-muted-foreground truncate">{`${getTime(event.startDate)} - ${getTime(event.endDate)}`}</div>
                 </div>
               ))}
           </div>
         ))}
       </div>
+      {isLoading && <Loader />}
       <EventForm
         isOpen={isEventFormOpen}
         onClose={() => {
@@ -138,6 +217,7 @@ export function WeekView({
           setSelectedEvent(null);
         }}
         onSave={handleEventSave}
+        onDelete={handleEventDelete}
         defaultDate={selectedDate}
         event={selectedEvent}
       />
