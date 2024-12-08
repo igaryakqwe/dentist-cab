@@ -4,7 +4,7 @@ import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 import { searchParams } from '@/utils/searchparams';
 import { ModifiedEmployee } from '@/types/employee';
-import { filterEmployees } from '@/utils/filter-employees';
+import { filterEmployees } from '@/utils/filter-utils';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
 
 export function useEmployeeTableFilters(data: ModifiedEmployee[]) {

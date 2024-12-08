@@ -25,17 +25,20 @@ import {
   ChevronsRight,
 } from 'lucide-react';
 import { parseAsInteger, useQueryState } from 'nuqs';
+import { DataTableSkeleton } from '@components/ui/table/data-table-skeleton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   totalItems: number;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   totalItems,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
@@ -82,6 +85,8 @@ export function DataTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
   });
+
+  if (isLoading) return <DataTableSkeleton />;
 
   return (
     <div className="flex flex-col justify-between">

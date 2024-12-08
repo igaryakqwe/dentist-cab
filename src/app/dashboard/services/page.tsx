@@ -1,8 +1,16 @@
-const DashboardServices = () => {
+import { Heading } from '@components/heading';
+import PageContainer from '@components/layout/page-container';
+import React from 'react';
+import ServicesTableContent from '@/app/dashboard/services/components/services-table-content';
+
+const DashboardServices = async () => {
   return (
-    <div>
-      <h1>Services</h1>
-    </div>
+    <PageContainer scrollable>
+      <div className="space-y-4">
+        <Heading title="Послуги" />
+        <ServicesTableContent />
+      </div>
+    </PageContainer>
   );
 };
 

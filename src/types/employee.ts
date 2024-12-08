@@ -15,9 +15,3 @@ export interface ModifiedEmployee {
   email: string;
   position: string;
 }
-
-export interface EmployeeFilter {
-  search?: string;
-  page: number;
-  rowsPerPage: number;
-}
