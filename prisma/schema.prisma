@@ -20,9 +20,15 @@ model User {
   role          Role            @default(USER)
   birthDate     DateTime?
   position      String?
+  gender        Gender?
   accounts      Account[]
   Authenticator Authenticator[]
   sessions      Session[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
 
 model Account {

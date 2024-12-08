@@ -4,6 +4,9 @@ import {
   parseAsInteger,
   parseAsString,
 } from 'nuqs/server';
+import { parseAsStringLiteral } from 'nuqs';
+
+const genders = ['MALE', 'FEMALE'] as const;
 
 export const searchParams = {
   page: parseAsInteger.withDefault(1),

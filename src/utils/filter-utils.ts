@@ -1,6 +1,7 @@
 import { ModifiedEmployee } from '@/types/employee';
 import { Filter } from '@/types';
 import { Service } from '@/types/service';
+import { Patient } from '@/types/patient';
 
 export const filterEmployees = (
   employees: ModifiedEmployee[],
@@ -41,4 +42,28 @@ export const filterServices = (
   const endIndex = startIndex + filters.rowsPerPage;
 
   return filteredServices.slice(startIndex, endIndex);
+};
+
+export const filterPatients = (
+  patients: Patient[],
+  filters: Filter
+): Patient[] => {
+  if (patients.length === 0) return [];
+
+  const filteredPatients = patients.filter((patient) => {
+    const matchesSearch =
+      !filters.search ||
+      patient.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      patient.surname?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      patient.email.toLowerCase().includes(filters.search.toLowerCase());
+
+    const matchesGender = !filters.gender || patient.gender === filters.gender;
+
+    return matchesSearch && matchesGender;
+  });
+
+  const startIndex = (filters.page - 1) * filters.rowsPerPage;
+  const endIndex = startIndex + filters.rowsPerPage;
+
+  return filteredPatients.slice(startIndex, endIndex);
 };

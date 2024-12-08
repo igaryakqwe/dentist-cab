@@ -96,6 +96,21 @@ const usersRoute = createTRPCRouter({
         },
       });
     }),
+  getPatients: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.user.findMany({
+      where: {
+        role: 'USER',
+      },
+      select: {
+        id: true,
+        name: true,
+        surname: true,
+        email: true,
+        birthDate: true,
+        gender: true,
+      },
+    });
+  }),
 });
 
 export default usersRoute;

@@ -14,7 +14,7 @@ export const data = {
     },
     {
       title: 'Пацієнти',
-      url: '#',
+      url: '/dashboard/patients',
       icon: CircleUser,
     },
     {
