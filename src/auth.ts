@@ -1,11 +1,13 @@
-import NextAuth from 'next-auth';
+import NextAuth, { User } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
-import Credentials from '@auth/core/providers/credentials';
+import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
 import { hashPassword } from '@/utils/hashPassword';
-import Google from '@auth/core/providers/google';
+import { Gender } from '@/types/patient';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // @ts-ignore
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   pages: {
@@ -18,41 +20,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { type: 'text' },
         password: { type: 'password' },
       },
-      authorize: async (credentials) => {
+      async authorize(credentials) {
         if (!credentials) {
           throw new Error('No credentials provided');
         }
 
-        const { email, password } = credentials as {
-          email: string;
-          password: string;
-        };
+        const { email, password } = credentials;
 
         if (!email || !password) {
           throw new Error('Invalid credentials');
         }
 
-        let user = null;
-
-        user = await prisma.user.findFirst({
+        let user = await prisma.user.findFirst({
           where: {
             email,
           },
         });
 
         if (!user) {
-          throw new Error('Invalid credentials.');
+          user = await prisma.user.create({
+            data: {
+              email: email as string,
+              password: hashPassword(password as string),
+            },
+          });
+        } else {
+          const hashedPassword = hashPassword(password as string);
+          const isValidPassword = hashedPassword === user.password;
+
+          if (!isValidPassword) {
+            throw new Error('Invalid credentials.');
+          }
         }
 
-        const hashedPassword = hashPassword(password);
-        const isValidPassword = hashedPassword === user.password;
-
-        if (!isValidPassword) {
-          throw new Error('Invalid credentials.');
-        }
-
-        return user;
+        return user as unknown as User;
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.surname = user.surname;
+        token.birthDate = user.birthDate;
+        token.position = user.position;
+        token.gender = user.gender;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.surname = token.surname as string;
+        session.user.birthDate = token.birthDate as Date;
+        session.user.position = token.position as string;
+        session.user.gender = token.gender as Gender;
+      }
+      return session;
+    },
+  },
 });

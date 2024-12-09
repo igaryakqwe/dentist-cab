@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { FC, PropsWithChildren } from 'react';
-import SwitchButton from '@/app/(auth)/_components/switch-button';
 import { Cross } from 'lucide-react';
 import Image from 'next/image';
 
 const AuthLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className="relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <SwitchButton />
       <div className="ml-7 my-7 relative hidden h-[90vh] rounded-2xl flex-col bg-muted p-10 text-white lg:flex dark:border-r bg-gradient-to-b from-[#0039CC] to-[#0072F8] shadow-xl">
         <Image
           src="/images/auth-grid.svg"

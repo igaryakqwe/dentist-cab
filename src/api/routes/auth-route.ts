@@ -1,24 +1,36 @@
-import { createTRPCRouter, publicProcedure } from '@/lib/trpc/trpc';
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '@/lib/trpc/trpc';
 import { z } from 'zod';
 import { hashPassword } from '@/utils/hashPassword';
 
 const authRoute = createTRPCRouter({
-  login: publicProcedure
-    .input(z.object({ email: z.string(), password: z.string() }))
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        image: z.string(),
+        name: z.string(),
+        surname: z.string(),
+        gender: z.enum(['MALE', 'FEMALE']),
+        birthDate: z.date().nullable(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
-      // const user = await ctx.db.user.findFirst({
-      //   where: {
-      //     email: input.email,
-      //   },
-      // });
-      //
-      // if (!user) {
-      //   throw new Error('Invalid email or password');
-      // }
-      //
-      // ctx.session.user = user;
-      //
-      // return user;
+      await ctx.db.user.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          surname: input.surname,
+          gender: input.gender,
+          birthDate: input.birthDate,
+          image: input.image,
+        },
+      });
     }),
   register: publicProcedure
     .input(

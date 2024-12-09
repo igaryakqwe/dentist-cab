@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
 import { IUser } from '@/types/user';
 import { mapUserToEmployee } from '@/utils/employee-mapper';
+import { User } from 'next-auth';
 
 const formSchema = z.object({
   email: z.string().email('Невірний формат email'),
@@ -152,7 +153,7 @@ export function AddEmployeeModal() {
                       )}
                       onClick={() => setSelectedUser(user)}
                     >
-                      <UserCard user={user} />
+                      <UserCard user={user as User} />
                     </div>
                   );
                 })}

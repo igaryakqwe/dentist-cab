@@ -39,7 +39,7 @@ export default function AvatarUpload({
         </div>
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg"
           onChange={handleFileChange}
           className="hidden"
         />

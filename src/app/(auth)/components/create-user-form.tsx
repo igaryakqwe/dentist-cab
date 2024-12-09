@@ -15,7 +15,7 @@ import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
 import * as z from 'zod';
 import { api } from '@/lib/trpc/client';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
+import GoogleSignInButton from '@/app/(auth)/components/google-auth-button';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),

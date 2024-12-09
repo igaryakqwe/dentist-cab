@@ -12,6 +12,7 @@ import { BadgeCheck, Bell, LogOut } from 'lucide-react';
 import { PropsWithChildren } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import UserCard from '@components/user-card';
+import Link from 'next/link';
 
 const UserDropdown = ({ children }: PropsWithChildren) => {
   const session = useSession();
@@ -39,10 +40,12 @@ const UserDropdown = ({ children }: PropsWithChildren) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
+          <Link href="/dashboard/profile">
+            <DropdownMenuItem>
+              <BadgeCheck />
+              Account
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>
             <Bell />
             Notifications

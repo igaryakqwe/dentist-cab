@@ -19,7 +19,6 @@ const scheduleRoute = createTRPCRouter({
   updateEvent: protectedProcedure
     .input(eventSchema)
     .mutation(async ({ input, ctx }) => {
-      console.log(input);
       await ctx.db.event.update({
         where: {
           id: input.id,
