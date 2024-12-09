@@ -145,16 +145,16 @@ export function DataTable<TData, TValue>({
           <div className="flex-1 text-sm text-muted-foreground">
             {totalItems > 0 ? (
               <>
-                Showing{' '}
-                {paginationState.pageIndex * paginationState.pageSize + 1} to{' '}
+                Показується від{' '}
+                {paginationState.pageIndex * paginationState.pageSize + 1} до{' '}
                 {Math.min(
                   (paginationState.pageIndex + 1) * paginationState.pageSize,
                   totalItems
                 )}{' '}
-                of {totalItems} entries
+                з {totalItems}
               </>
             ) : (
-              'No entries found'
+              'Не знайдено'
             )}
           </div>
         </div>
@@ -162,7 +162,8 @@ export function DataTable<TData, TValue>({
           <div className="flex w-[150px] items-center justify-center text-sm font-medium">
             {totalItems > 0 ? (
               <>
-                Page {paginationState.pageIndex + 1} of {table.getPageCount()}
+                Сторінка {paginationState.pageIndex + 1} з{' '}
+                {table.getPageCount()}
               </>
             ) : (
               'No pages'

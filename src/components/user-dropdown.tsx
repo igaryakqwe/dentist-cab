@@ -43,18 +43,14 @@ const UserDropdown = ({ children }: PropsWithChildren) => {
           <Link href="/dashboard/profile">
             <DropdownMenuItem>
               <BadgeCheck />
-              Account
+              Аккаунт
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut />
-          Log out
+          Вийти
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

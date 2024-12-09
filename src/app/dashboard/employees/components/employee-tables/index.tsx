@@ -5,7 +5,7 @@ import { DataTableSearch } from '@/components/ui/table/data-table-search';
 import { columns } from '../employee-tables/columns';
 import { useEmployeeTableFilters } from './use-employee-table-filters';
 import { ModifiedEmployee } from '@/types/employee';
-import { AddEmployeeModal } from '@/app/dashboard/employees/_components/add-employee-modal';
+import { AddEmployeeModal } from '@/app/dashboard/employees/components/add-employee-modal';
 
 export default function EmployeeTable({
   data,

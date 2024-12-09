@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useState } from 'react';
-import { UpdateUserModal } from '@/app/dashboard/employees/_components/update-user-modal';
+import { UpdateUserModal } from '@/app/dashboard/employees/components/update-user-modal';
 import { ModifiedEmployee } from '@/types/employee';
 import { api } from '@/lib/trpc/client';
 import useEmployeesStore from '@/hooks/store/use-employees-store';

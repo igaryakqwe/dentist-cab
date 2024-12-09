@@ -93,11 +93,8 @@ export function CalendarHeader({
           value={view}
           onValueChange={(v) => onViewChange(v as any)}
         >
-          <ToggleGroupItem value="day" className="text-xs">
-            D
-          </ToggleGroupItem>
           <ToggleGroupItem value="week" className="text-xs">
-            W
+            Т
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
