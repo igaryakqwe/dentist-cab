@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const EmployeeSchema = z.object({
   id: z.string(),
+  image: z.string().nullable(),
   name: z.string().nullable(),
   surname: z.string().nullable(),
   position: z.string().nullable(),

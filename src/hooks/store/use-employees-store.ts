@@ -1,14 +1,14 @@
 import { create } from 'zustand';
-import { ModifiedEmployee } from '@/types/employee';
+import { Employee, ModifiedEmployee } from '@/types/employee';
 
 export interface EmployeeStore {
-  employees: ModifiedEmployee[];
-  setEmployees: (employees: ModifiedEmployee[]) => void;
+  employees: Employee[];
+  setEmployees: (employees: Employee[]) => void;
 }
 
 const useEmployeesStore = create<EmployeeStore>((set) => ({
   employees: [],
-  setEmployees: (employees: ModifiedEmployee[]) => set({ employees }),
+  setEmployees: (employees: Employee[]) => set({ employees }),
 }));
 
 export default useEmployeesStore;

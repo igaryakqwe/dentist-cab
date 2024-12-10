@@ -9,6 +9,7 @@ const usersRoute = createTRPCRouter({
       },
       select: {
         id: true,
+        image: true,
         name: true,
         surname: true,
         position: true,
@@ -67,7 +68,7 @@ const usersRoute = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        position: z.string(),
+        position: z.string().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {

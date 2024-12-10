@@ -15,10 +15,7 @@ export default async function EmployeeListingPage() {
     <PageContainer scrollable>
       <div className="space-y-4">
         <Heading title="Працівники" />
-        <EmployeeTable
-          data={employeeMapper(employees)}
-          totalData={totalUsers}
-        />
+        <EmployeeTable data={employees} totalData={totalUsers} />
       </div>
     </PageContainer>
   );

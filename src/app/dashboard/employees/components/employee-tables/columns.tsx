@@ -1,37 +1,30 @@
 'use client';
 
-import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
-import { ModifiedEmployee } from '@/types/employee';
+import { Employee } from '@/types/employee';
+import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
 
-export const columns: ColumnDef<ModifiedEmployee>[] = [
+export const columns: ColumnDef<Employee>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        className="ml-3"
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+    accessorKey: 'image',
+    header: ' ',
     cell: ({ row }) => (
-      <Checkbox
-        className="ml-3"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <Avatar>
+        <AvatarImage src={row.original.image as string} alt="avatar" />
+        <AvatarFallback>{row.original.email[0]}</AvatarFallback>
+      </Avatar>
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
-    accessorKey: 'fullName',
+    accessorKey: 'name',
     header: 'Імʼя та прізвище',
+    cell: ({ row }) => (
+      <div className="ml-2">
+        {row.original.name} {row.original.surname}
+      </div>
+    ),
   },
-
   {
     accessorKey: 'email',
     header: 'Електронна пошта',

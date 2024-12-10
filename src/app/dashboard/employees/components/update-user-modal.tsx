@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ModifiedEmployee } from '@/types/employee';
+import { Employee, ModifiedEmployee } from '@/types/employee';
 import { api } from '@/lib/trpc/client';
 import { Check, Loader2, X } from 'lucide-react';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
@@ -15,11 +15,11 @@ import { useToast } from '@/hooks/use-toast';
 interface UpdateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  employee: ModifiedEmployee;
+  employee: Employee;
 }
 
 type FormInputs = {
-  position: string;
+  position: string | null;
 };
 
 export const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
@@ -86,7 +86,11 @@ export const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col items-center justify-center p-4 h-32 border rounded-lg shadow-lg bg-white"
       >
-        <h3 className="text-lg font-semibold">{employee.fullName}</h3>
+        {employee.name && employee.surname && (
+          <h3 className="text-lg font-semibold">
+            {employee.name} {employee.surname}
+          </h3>
+        )}
         <p className="truncate text-zinc-700 mb-2 text-xs">{employee.email}</p>
         {!isEditing ? (
           <Badge

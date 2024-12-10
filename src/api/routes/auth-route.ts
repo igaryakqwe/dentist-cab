@@ -32,24 +32,16 @@ const authRoute = createTRPCRouter({
         },
       });
     }),
-  register: publicProcedure
-    .input(
-      z.object({
-        email: z.string(),
-        password: z.string(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const password = hashPassword(input.password);
-      return await ctx.db.user.create({
-        data: {
-          email: input.email,
-          password,
-          emailVerified: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
+  getUserRole: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: input,
         },
       });
+
+      return user?.role;
     }),
 });
 

@@ -33,12 +33,15 @@ import useEmployeesStore from '@/hooks/store/use-employees-store';
 import { IUser } from '@/types/user';
 import { mapUserToEmployee } from '@/utils/employee-mapper';
 import { User } from 'next-auth';
+import { useSession } from 'next-auth/react';
 
 const formSchema = z.object({
   email: z.string().email('Невірний формат email'),
 });
 
 export function AddEmployeeModal() {
+  const { data } = useSession();
+  const role = data?.user?.role;
   const { toast } = useToast();
   const { employees, setEmployees } = useEmployeesStore((state) => state);
   const [users, setUsers] = useState<IUser[]>([]);
@@ -88,10 +91,9 @@ export function AddEmployeeModal() {
         { id: selectedUser.id },
         {
           onSuccess: () => {
-            const mappedUser = mapUserToEmployee(selectedUser);
             form.reset();
             setUsers([]);
-            setEmployees([...employees, mappedUser]);
+            setEmployees([...employees, selectedUser]);
             setSelectedUser(null);
           },
           onError: (error) => {
@@ -105,6 +107,8 @@ export function AddEmployeeModal() {
       );
     }
   }
+
+  if (role !== 'ADMIN') return null;
 
   return (
     <Dialog>

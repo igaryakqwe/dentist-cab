@@ -1,21 +1,22 @@
-import { ModifiedEmployee } from '@/types/employee';
+import { Employee, ModifiedEmployee } from '@/types/employee';
 import { Filter, ScheduleFilters } from '@/types';
 import { Service } from '@/types/service';
 import { Patient } from '@/types/patient';
 import { CalendarEvent } from '@/types/calendar';
 
 export const filterEmployees = (
-  employees: ModifiedEmployee[],
+  employees: Employee[],
   filters: Filter
-): ModifiedEmployee[] => {
+): Employee[] => {
   if (employees.length === 0) return [];
 
   const filteredEmployees = employees.filter((employee) => {
     return (
       !filters.search ||
-      employee.fullName.toLowerCase().includes(filters.search.toLowerCase()) ||
+      employee.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      employee.surname?.toLowerCase().includes(filters.search.toLowerCase()) ||
       employee.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-      employee.position.toLowerCase().includes(filters.search.toLowerCase())
+      employee.position?.toLowerCase().includes(filters.search.toLowerCase())
     );
   });
 
