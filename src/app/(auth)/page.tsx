@@ -12,7 +12,9 @@ const HomePage = async () => {
   return (
     <>
       <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Вхід</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Вхід / Реєстрація
+        </h1>
         <p className="text-sm text-muted-foreground">
           Введіть свою електронну пошту та пароль
         </p>
