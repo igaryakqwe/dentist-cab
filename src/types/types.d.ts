@@ -5,6 +5,7 @@ import { Gender } from '@/types/patient';
 declare module 'next-auth' {
   interface Session {
     user: {
+      image?: string | null;
       id?: string;
       surname: string;
       birthDate: Date;
@@ -29,6 +30,7 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
   interface JWT {
+    image?: string | null;
     id?: string;
     surname: string;
     birthDate: Date;

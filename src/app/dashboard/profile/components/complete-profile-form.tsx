@@ -62,10 +62,13 @@ const CompleteProfileForm = () => {
 
   const updateProfileMutation = api.auth.updateProfile.useMutation();
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const response = await fetch(values.image, { mode: 'no-cors' });
-    const blob = await response.blob();
-    const file = new File([blob], 'avatar.jpg', { type: blob.type });
-    try {
+    let imagePath = values.image;
+
+    if (values.image !== user?.image) {
+      const response = await fetch(values.image, { mode: 'no-cors' });
+      const blob = await response.blob();
+      const file = new File([blob], 'avatar.jpg', { type: blob.type });
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('id', user?.id as string);
@@ -74,20 +77,22 @@ const CompleteProfileForm = () => {
         body: formData,
       });
 
-      const imagePath = createAvatarPath(user?.id as string);
+      imagePath = createAvatarPath(user?.id as string);
+    }
 
-      const data = {
-        ...values,
-        id: user?.id as string,
-        image: imagePath,
-      };
+    const data = {
+      ...values,
+      id: user?.id as string,
+      image: imagePath,
+    };
 
+    try {
       await updateProfileMutation.mutateAsync(data);
       await update({ user: { ...user, ...data } });
       window.location.reload();
     } catch (e) {
       toast({
-        title: 'Помила',
+        title: 'Помилка',
         description: 'Не вдалося зберегти профіль',
         variant: 'destructive',
       });
