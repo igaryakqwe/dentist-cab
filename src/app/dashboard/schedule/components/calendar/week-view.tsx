@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { Button } from '@components/ui/button';
 import type { CalendarEvent } from '@/types/calendar';
 import { EventForm } from './event-form';
 import { getTime } from '@/utils/date-utils';
@@ -9,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { Loader } from './loader';
 import { filterEvents } from '@/utils/filter-utils';
-import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -25,6 +23,9 @@ export function WeekView({
   doctors,
 }: WeekViewProps) {
   const { toast } = useToast();
+  const { data } = useSession();
+  const user = data?.user;
+  const isDoctor = user?.role !== 'USER';
 
   const filters = { search, doctors: doctors || [] };
 
@@ -68,6 +69,7 @@ export function WeekView({
   };
 
   const handleCellClick = (date: Date, hour: number) => {
+    if (!isDoctor) return;
     const newDate = new Date(date);
     newDate.setHours(hour);
     setSelectedDate(newDate);
@@ -76,6 +78,7 @@ export function WeekView({
   };
 
   const handleEventClick = (event: CalendarEvent) => {
+    if (!isDoctor) return;
     setSelectedEvent(event);
     setIsEventFormOpen(true);
   };
