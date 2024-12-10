@@ -35,14 +35,35 @@ const routeMapping: Record<string, BreadcrumbItem[]> = {
     dashboardBreadcrumbs,
     { title: 'Аккаунт', link: '/dashboard/profile' },
   ],
+  '/dashboard/patients/*': [
+    dashboardBreadcrumbs,
+    { title: 'Пацієнти', link: '/dashboard/patients' },
+    { title: 'Пацієнт', link: '' },
+  ],
 };
 
 export function useBreadcrumbs() {
   const pathname = usePathname();
 
   const breadcrumbs = useMemo(() => {
-    if (routeMapping[pathname]) {
-      return routeMapping[pathname];
+    const matchedRoute = Object.keys(routeMapping).find((route) => {
+      const regex = new RegExp(`^${route.replace('*', '[^/]+')}$`);
+      return regex.test(pathname);
+    });
+
+    if (matchedRoute) {
+      const segments = pathname.split('/').filter(Boolean);
+      const dynamicSegment = segments[segments.length - 1];
+      return routeMapping[matchedRoute].map((breadcrumb) => {
+        if (breadcrumb.link === '') {
+          return {
+            ...breadcrumb,
+            link: pathname,
+            title: dynamicSegment,
+          };
+        }
+        return breadcrumb;
+      });
     }
 
     const segments = pathname.split('/').filter(Boolean);

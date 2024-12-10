@@ -104,6 +104,7 @@ const usersRoute = createTRPCRouter({
       },
       select: {
         id: true,
+        image: true,
         name: true,
         surname: true,
         email: true,

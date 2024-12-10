@@ -2,6 +2,7 @@ export type Gender = 'MALE' | 'FEMALE';
 
 export interface Patient {
   id: string;
+  image: string | null;
   name: string | null;
   surname: string | null;
   email: string;

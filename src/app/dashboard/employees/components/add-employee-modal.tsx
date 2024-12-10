@@ -25,13 +25,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Loader2, Plus } from 'lucide-react';
 import useDebounce from '@/hooks/use-debounce';
-import UserProfile from '@components/user-profile';
+import UserCard from '@components/user-card';
 import { cn } from '@/utils/cn';
 import { api } from '@/lib/trpc/client';
 import { useToast } from '@/hooks/use-toast';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
 import { IUser } from '@/types/user';
-import { mapUserToEmployee } from '@/utils/employee-mapper';
 import { User } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
@@ -157,7 +156,7 @@ export function AddEmployeeModal() {
                       )}
                       onClick={() => setSelectedUser(user)}
                     >
-                      <UserProfile user={user as User} />
+                      <UserCard user={user as User} />
                     </div>
                   );
                 })}

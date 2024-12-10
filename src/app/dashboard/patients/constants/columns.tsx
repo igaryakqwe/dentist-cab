@@ -1,32 +1,21 @@
 'use client';
 
-import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Patient } from '@/types/patient';
 import { getDateOfBirth } from '@/utils/date-utils';
 import { CellAction } from '../components/cell-action';
+import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
 
 export const columns: ColumnDef<Patient>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        className="ml-3"
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+    accessorKey: 'image',
+    header: ' ',
     cell: ({ row }) => (
-      <Checkbox
-        className="ml-3"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <Avatar>
+        <AvatarImage src={row.original.image as string} alt="avatar" />
+        <AvatarFallback>{row.original.email[0]}</AvatarFallback>
+      </Avatar>
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: 'name',
