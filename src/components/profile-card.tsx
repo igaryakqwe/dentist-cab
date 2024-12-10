@@ -4,11 +4,15 @@ import { Badge } from '@components/ui/badge';
 import { CalendarFold, Dna, Mail } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { format } from 'date-fns';
+import { User } from 'next-auth';
+import { FC } from 'react';
 
-const ProfileCard = () => {
-  const { data } = useSession();
+interface ProfileCardProps {
+  user: User;
+  className?: string;
+}
 
-  const user = data?.user;
+const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
   const fallback = user?.name ? user.name[0] : user?.email?.at(0) || 'No image';
   const fullName = user?.name
     ? user.surname
@@ -24,7 +28,7 @@ const ProfileCard = () => {
   const gender = user?.gender === 'MALE' ? 'Чоловік' : 'Жінка';
 
   return (
-    <Card>
+    <Card className={className}>
       <CardContent className="pt-6">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">

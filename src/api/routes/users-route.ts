@@ -112,6 +112,46 @@ const usersRoute = createTRPCRouter({
       },
     });
   }),
+  getPatient: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.user.findUnique({
+        where: {
+          id: input,
+        },
+        select: {
+          id: true,
+          image: true,
+          name: true,
+          surname: true,
+          email: true,
+          birthDate: true,
+          gender: true,
+          patientEvents: {
+            where: {
+              patientId: input,
+            },
+            select: {
+              id: true,
+              startDate: true,
+              doctor: {
+                select: {
+                  id: true,
+                  name: true,
+                  surname: true,
+                },
+              },
+              service: {
+                select: {
+                  name: true,
+                  duration: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
 });
 
 export default usersRoute;

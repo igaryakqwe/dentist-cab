@@ -1,13 +1,19 @@
 'use client';
 
-import ProfileCard from './profile-card';
+import ProfileCard from '@components/profile-card';
 import ProfileCompletionBar from '@/app/dashboard/profile/components/profile-completion-bar';
 import CompleteProfileForm from '@/app/dashboard/profile/components/complete-profile-form';
+import { useSession } from 'next-auth/react';
+import { User } from 'next-auth';
 
 export default function ProfilePage() {
+  const { data } = useSession();
+
+  const user = data?.user as User;
+
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-[1fr_2fr]">
-      <ProfileCard />
+      <ProfileCard user={user} />
       <CompleteProfileForm />
       <ProfileCompletionBar />
     </div>

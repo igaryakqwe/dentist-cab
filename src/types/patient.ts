@@ -8,3 +8,21 @@ export interface Patient {
   birthDate: Date | null;
   gender: Gender | null;
 }
+
+export interface PatientWithEvents extends Patient {
+  patientEvents: PatientEvent[];
+}
+
+export interface PatientEvent {
+  id: string;
+  startDate: Date;
+  doctor: {
+    id: string;
+    name: string;
+    surname: string;
+  };
+  service: {
+    name: string;
+    duration: number;
+  };
+}

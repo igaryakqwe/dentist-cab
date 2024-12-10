@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Loader2, Plus } from 'lucide-react';
 import useDebounce from '@/hooks/use-debounce';
-import UserCard from '@/components/user-card';
+import UserProfile from '@components/user-profile';
 import { cn } from '@/utils/cn';
 import { api } from '@/lib/trpc/client';
 import { useToast } from '@/hooks/use-toast';
@@ -157,7 +157,7 @@ export function AddEmployeeModal() {
                       )}
                       onClick={() => setSelectedUser(user)}
                     >
-                      <UserCard user={user as User} />
+                      <UserProfile user={user as User} />
                     </div>
                   );
                 })}
