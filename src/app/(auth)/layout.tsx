@@ -2,6 +2,11 @@ import * as React from 'react';
 import { FC, PropsWithChildren } from 'react';
 import { Cross } from 'lucide-react';
 import Image from 'next/image';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Авторизація',
+};
 
 const AuthLayout: FC<PropsWithChildren> = ({ children }) => {
   return (

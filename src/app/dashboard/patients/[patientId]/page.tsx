@@ -1,7 +1,5 @@
-import { trpc } from '@/lib/trpc/server';
 import PatientPage from '@/app/dashboard/patients/components/patient-page';
 import { Heading } from '@components/heading';
-import ProfilePage from '@/app/dashboard/profile/components/profile-page';
 import PageContainer from '@components/layout/page-container';
 import React from 'react';
 
@@ -10,6 +8,10 @@ interface PatientProps {
     patientId: string;
   };
 }
+
+export const metadata = {
+  title: 'Пацієнт',
+};
 
 const Patient = async ({ params }: PatientProps) => {
   return (

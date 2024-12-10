@@ -2,6 +2,11 @@ import { Heading } from '@components/heading';
 import PageContainer from '@components/layout/page-container';
 import React from 'react';
 import ServicesTableContent from '@/app/dashboard/services/components/services-table-content';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Послуги',
+};
 
 const DashboardServices = async () => {
   return (

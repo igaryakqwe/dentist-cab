@@ -3,6 +3,10 @@ import PageContainer from '@components/layout/page-container';
 import React from 'react';
 import ProfilePage from '@/app/dashboard/profile/components/profile-page';
 
+export const metadata = {
+  title: 'Профіль',
+};
+
 const DashboardServices = async () => {
   return (
     <PageContainer scrollable>

@@ -3,6 +3,10 @@ import PageContainer from '@components/layout/page-container';
 import React from 'react';
 import PatientsTableContent from '@/app/dashboard/patients/components/patients-table-content';
 
+export const metadata = {
+  title: 'Пацієнти',
+};
+
 const Patients = () => {
   return (
     <PageContainer scrollable>
