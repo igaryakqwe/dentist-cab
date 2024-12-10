@@ -26,6 +26,7 @@ import { api } from '@/lib/trpc/client';
 import { useToast } from '@/hooks/use-toast';
 import useServicesStore from '@/hooks/store/use-services-store';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface ManageServiceModalProps {
   service?: Service;
@@ -38,6 +39,7 @@ const ManageServiceModal: FC<ManageServiceModalProps> = ({
   setIsOpen,
   isOpen,
 }) => {
+  const { data } = useSession();
   const { toast } = useToast();
   const { addService, updateService } = useServicesStore((state) => state);
 
@@ -111,6 +113,8 @@ const ManageServiceModal: FC<ManageServiceModalProps> = ({
           }
         );
   };
+
+  if (data?.user?.role === 'USER') return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

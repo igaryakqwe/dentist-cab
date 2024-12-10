@@ -17,12 +17,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/types/service';
 import ManageServiceModal from '@/app/dashboard/services/components/manage-service-modal';
 import useServicesStore from '@/hooks/store/use-services-store';
+import { useSession } from 'next-auth/react';
 
 interface CellActionProps {
   service: Service;
 }
 
 export const CellAction = ({ service }: CellActionProps) => {
+  const { data } = useSession();
   const { toast } = useToast();
   const { deleteService } = useServicesStore((state) => state);
 
@@ -53,6 +55,8 @@ export const CellAction = ({ service }: CellActionProps) => {
       }
     );
   };
+
+  if (data?.user?.role === 'USER') return null;
 
   return (
     <>
