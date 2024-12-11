@@ -27,15 +27,14 @@ export const CellAction = ({ patient }: CellActionProps) => {
           <NotebookPen className="h-4 w-4" />
         </Link>
       )}
-      {isDoctor ||
-        (isUserRecord && (
-          <Link
-            href={`/dashboard/patients/${patient.id}`}
-            className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
-          >
-            <SquareArrowOutUpRight className="h-4 w-4" />
-          </Link>
-        ))}
+      {(isDoctor || isUserRecord) && (
+        <Link
+          href={`/dashboard/patients/${patient.id}`}
+          className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
+        >
+          <SquareArrowOutUpRight className="h-4 w-4" />
+        </Link>
+      )}
     </>
   );
 };

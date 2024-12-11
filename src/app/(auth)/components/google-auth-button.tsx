@@ -19,7 +19,7 @@ export default function GoogleSignInButton() {
       }
     >
       <Image src="/icons/google.svg" alt="Google Logo" width={16} height={16} />
-      Continue with Google
+      Авторизуватись з Google
     </Button>
   );
 }
