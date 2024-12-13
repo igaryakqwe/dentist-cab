@@ -128,6 +128,7 @@ const usersRoute = createTRPCRouter({
           email: true,
           birthDate: true,
           gender: true,
+          role: true,
           patientEvents: {
             where: {
               patientId: input,

@@ -19,8 +19,8 @@ export interface PatientEvent {
   startDate: Date;
   doctor: {
     id: string;
-    name: string;
-    surname: string;
+    name: string | null;
+    surname: string | null;
   };
   service: {
     name: string;

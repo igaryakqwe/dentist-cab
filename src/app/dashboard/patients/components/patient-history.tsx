@@ -9,12 +9,18 @@ import {
 import { PatientEvent } from '@/types/patient';
 import { FC } from 'react';
 import { CalendarCheck } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 interface PatientHistoryProps {
   patientEvents: PatientEvent[];
 }
 
 const PatientHistory: FC<PatientHistoryProps> = ({ patientEvents }) => {
+  const eventHeight = 155;
+  const eventLineHeight = (patientEvents.length - 1) * eventHeight;
+
+  console.log(eventLineHeight);
+
   return (
     <Card className="max-h-[85vh] overflow-y-auto">
       <CardHeader>
@@ -23,13 +29,16 @@ const PatientHistory: FC<PatientHistoryProps> = ({ patientEvents }) => {
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <div className="absolute left-3 top-1 h-[90%] w-0.5 bg-gray-200"></div>
+          <div
+            className={`absolute left-[11px] top-1 w-0.5 bg-primary/20`}
+            style={{ height: `${eventLineHeight}px` }}
+          />
           {patientEvents.length > 0 ? (
             patientEvents.map((record, index) => (
               <div key={index} className="mb-8 flex items-start">
                 <div className="flex flex-col items-center mr-4">
-                  <div className="z-20 rounded-full h-6 w-6 flex items-center outline-4 outline-white justify-center bg-blue-100 text-blue-800">
-                    <CalendarCheck className="h-2.5 w-2.5 text-primary" />
+                  <div className="z-10 rounded-full h-6 w-6 flex items-center outline outline-[10px] outline-background justify-center bg-secondary text-blue-800">
+                    <CalendarCheck className="z-30 h-2.5 w-2.5 text-primary" />
                   </div>
                   {index !== patientEvents.length - 1 && (
                     <div className="h-full w-0.5 bg-gray-200"></div>

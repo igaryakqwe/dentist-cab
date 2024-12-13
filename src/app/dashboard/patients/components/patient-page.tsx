@@ -19,11 +19,11 @@ const PatientPage: FC<PatientPageProps> = ({ id }) => {
 
   if (!data) return null;
 
-  const { patientEvents, ...user } = data as unknown as PatientWithEvents;
+  const { patientEvents, ...user } = data;
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-[1fr_2fr]">
-      <ProfileCard className="h-fit" user={user as unknown as User} />
+      <ProfileCard className="h-fit" user={user as User} />
       <PatientHistory patientEvents={patientEvents} />
     </div>
   );
