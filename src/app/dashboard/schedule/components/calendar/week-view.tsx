@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CalendarEvent } from '@/types/calendar';
+import type { CalendarEvent, EventWithPosition } from '@/types/calendar';
 import { EventForm } from './event-form';
 import { getTime } from '@/utils/date-utils';
 import { api } from '@/lib/trpc/client';
@@ -8,6 +8,7 @@ import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { Loader } from './loader';
 import { filterEvents } from '@/utils/filter-utils';
 import { useSession } from 'next-auth/react';
+import { getEventStyle, getOverlappingGroups } from '@/utils/schedule-utils';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -51,22 +52,6 @@ export function WeekView({
   });
 
   const today = new Date();
-
-  const getEventStyle = (event: CalendarEvent) => {
-    const startHour = event.startDate.getHours();
-    const startMinute = event.startDate.getMinutes();
-    const endHour = event.endDate.getHours();
-    const endMinute = event.endDate.getMinutes();
-
-    const top = (startHour + startMinute / 60) * 40;
-    const height =
-      (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 40;
-
-    return {
-      top: `${top}px`,
-      height: `${height}px`,
-    };
-  };
 
   const handleCellClick = (date: Date, hour: number) => {
     if (!isDoctor) return;
@@ -151,6 +136,8 @@ export function WeekView({
     setSelectedEvent(null);
   };
 
+  const groupedEvents = getOverlappingGroups(filteredEvents);
+
   return (
     <div className="flex-1 relative max-h-[85vh] border overflow-auto rounded-[6px] bg-background">
       <div className="relative grid grid-rows-1 border-b grid-cols-[auto_repeat(7,1fr)]">
@@ -191,7 +178,8 @@ export function WeekView({
                 onClick={() => handleCellClick(date, hour)}
               />
             ))}
-            {filteredEvents
+            {groupedEvents
+              .flat()
               .filter(
                 (event) =>
                   event.startDate.toDateString() === date.toDateString()
@@ -199,14 +187,16 @@ export function WeekView({
               .map((event) => (
                 <div
                   key={event.id}
-                  className="absolute left-0 right-0 mx-0.5 p-1 rounded-sm bg-primary/10 text-[10px] overflow-hidden cursor-pointer hover:bg-primary/20"
+                  className="absolute left-0 right-0 mx-0.5 p-1 rounded-sm text-[10px] overflow-hidden cursor-pointer"
                   style={getEventStyle(event)}
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="font-medium text-primary truncate">
+                  <div className="font-medium text-foreground truncate">
                     {event.title}
                   </div>
-                  <div className="text-muted-foreground truncate">{`${getTime(event.startDate)} - ${getTime(event.endDate)}`}</div>
+                  <div className="text-muted-foreground truncate">
+                    {`${getTime(event.startDate)} - ${getTime(event.endDate)}`}
+                  </div>
                 </div>
               ))}
           </div>

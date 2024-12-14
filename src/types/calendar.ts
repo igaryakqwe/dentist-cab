@@ -20,4 +20,9 @@ export type CalendarEvent = {
   patientId: string;
 };
 
+export interface EventWithPosition extends CalendarEvent {
+  column: number;
+  totalColumns: number;
+}
+
 export type CalendarView = 'day' | 'week';
