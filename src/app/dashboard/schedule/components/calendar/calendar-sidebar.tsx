@@ -1,6 +1,7 @@
 import { Calendar } from '@components/ui/calendar';
 import DentistFilter from '@/app/dashboard/schedule/components/calendar/dentist-filter';
 import { useEffect } from 'react';
+import { uk } from 'date-fns/locale';
 
 interface CalendarSidebarProps {
   currentDate: Date;
@@ -24,6 +25,7 @@ export function CalendarSidebar({
   return (
     <aside className="p-4 space-y-6 bg-background rounded-l-lg">
       <Calendar
+        locale={uk}
         mode="single"
         selected={currentDate}
         onSelect={(date) => date && onDateChange(date)}

@@ -1,5 +1,5 @@
 import type { CalendarEvent, EventWithPosition } from '@/types/calendar';
-import { getColorByString, hexToRgba } from '@/utils/styles-utils';
+import { getColorByString } from '@/utils/styles-utils';
 
 export const isOverlapping = (event1: CalendarEvent, event2: CalendarEvent) => {
   return event1.startDate < event2.endDate && event2.startDate < event1.endDate;
@@ -45,8 +45,7 @@ export const getEventStyle = (event: EventWithPosition) => {
   const height =
     (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 40;
 
-  const color = getColorByString(event.doctorId);
-  const backgroundColor = hexToRgba(color, 0.2);
+  const backgroundColor = getColorByString(event?.doctor?.surname || '', 0.2);
 
   const width = 100 / event.totalColumns;
   const left = event.column * width;

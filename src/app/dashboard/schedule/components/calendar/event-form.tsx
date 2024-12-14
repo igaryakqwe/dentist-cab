@@ -24,12 +24,13 @@ import PatientSelector from '@/app/dashboard/schedule/components/calendar/patien
 import { calculateEndTime } from '@/utils/date-utils';
 import ServiceSelector from '@/app/dashboard/schedule/components/calendar/service-selector';
 import { api } from '@/lib/trpc/client';
+import { toast } from '@/hooks/use-toast';
+import { useSession } from 'next-auth/react';
+import useScheduleStore from '@/hooks/filters/use-schedule-store';
 
 interface EventFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (event: Omit<CalendarEvent, 'id'>) => void;
-  onDelete?: (id: string) => void;
   defaultDate?: Date;
   event?: CalendarEvent | null;
 }
@@ -37,11 +38,13 @@ interface EventFormProps {
 export function EventForm({
   isOpen,
   onClose,
-  onSave,
-  onDelete,
   defaultDate = new Date(),
   event,
 }: EventFormProps) {
+  const { data } = useSession();
+  const user = data?.user;
+  const isDoctor = user?.role !== 'USER';
+
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState<Date>(defaultDate);
   const [doctorId, setDoctorId] = useState('');
@@ -49,6 +52,10 @@ export function EventForm({
   const [serviceId, setServiceId] = useState('');
 
   const { data: services, isLoading } = api.services.getServices.useQuery();
+
+  const addEventMutation = api.schedule.addEvent.useMutation();
+  const updateEventMutation = api.schedule.updateEvent.useMutation();
+  const deleteEventMutation = api.schedule.deleteEvent.useMutation();
 
   const selectedService = services?.find((service) => service.id === serviceId);
 
@@ -69,21 +76,6 @@ export function EventForm({
       setPatientId('');
     }
   }, [event]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (startDate && selectedService && doctorId && patientId && serviceId) {
-      onSave({
-        title,
-        startDate,
-        endDate: calculateEndTime(startDate, selectedService.duration),
-        doctorId,
-        patientId,
-        serviceId,
-      });
-      onClose();
-    }
-  };
 
   function handleDateSelect(date: Date | undefined) {
     if (date) {
@@ -107,6 +99,69 @@ export function EventForm({
       return newDate;
     });
   }
+
+  const handleEventSave = async (eventData: Omit<CalendarEvent, 'id'>) => {
+    if (!isDoctor) return;
+    try {
+      if (event) {
+        await updateEventMutation.mutateAsync({ ...eventData, id: event.id });
+        toast({
+          title: 'Подію успішно оновлено',
+        });
+      } else {
+        await addEventMutation.mutateAsync(eventData);
+        toast({
+          title: 'Подію успішно додано',
+        });
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: 'Помилка при збереженні події',
+        variant: 'destructive',
+      });
+    }
+    onClose();
+  };
+
+  const handleEventDelete = async (eventId: string) => {
+    if (!isDoctor && !event) return;
+    try {
+      await deleteEventMutation.mutateAsync({ id: eventId });
+      toast({
+        title: 'Подію успішно видалено',
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: 'Помилка при видаленні події',
+        variant: 'destructive',
+      });
+    }
+    onClose();
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isDoctor) return;
+    if (startDate && selectedService && doctorId && patientId && serviceId) {
+      handleEventSave({
+        title,
+        startDate,
+        endDate: calculateEndTime(startDate, selectedService.duration),
+        doctorId,
+        patientId,
+        serviceId,
+      });
+      onClose();
+    }
+  };
+
+  if (!event) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -250,7 +305,7 @@ export function EventForm({
               <Button
                 type="button"
                 variant="destructive"
-                onClick={() => onDelete && onDelete(event.id)}
+                onClick={() => handleEventDelete(event.id)}
                 className="h-8 text-sm"
               >
                 Видалити

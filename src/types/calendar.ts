@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { Service } from '@/types/service';
+import { Employee } from '@/types/employee';
+import { Patient } from '@/types/patient';
 
 export const eventSchema = z.object({
   id: z.string(),
@@ -17,12 +20,26 @@ export type CalendarEvent = {
   endDate: Date;
   serviceId: string;
   doctorId: string;
+  doctor?: {
+    name: string | null;
+    surname: string | null;
+  };
   patientId: string;
 };
 
 export interface EventWithPosition extends CalendarEvent {
   column: number;
   totalColumns: number;
+}
+
+export interface SingleEvent {
+  id: string;
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  service: Service;
+  doctor: Employee;
+  patient: Patient;
 }
 
 export type CalendarView = 'day' | 'week';

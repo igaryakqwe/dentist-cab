@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import type { CalendarEvent, EventWithPosition } from '@/types/calendar';
-import { EventForm } from './event-form';
-import { getTime } from '@/utils/date-utils';
-import { api } from '@/lib/trpc/client';
-import { useToast } from '@/hooks/use-toast';
+import type { CalendarEvent } from '@/types/calendar';
+import { getTime, isToday } from '@/utils/date-utils';
 import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { Loader } from './loader';
 import { filterEvents } from '@/utils/filter-utils';
 import { useSession } from 'next-auth/react';
 import { getEventStyle, getOverlappingGroups } from '@/utils/schedule-utils';
+import { EventForm } from './event-form';
+import { EventModal } from './event-modal';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
+import { capitalize } from '@/utils/string-utils';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -23,26 +25,22 @@ export function WeekView({
   search,
   doctors,
 }: WeekViewProps) {
-  const { toast } = useToast();
   const { data } = useSession();
   const user = data?.user;
   const isDoctor = user?.role !== 'USER';
 
   const filters = { search, doctors: doctors || [] };
 
-  const { events, updateEvent, addEvent, deleteEvent } = useScheduleStore();
+  const events = useScheduleStore((state) => state.events);
 
   const filteredEvents = filterEvents(events || [], filters);
 
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
-
-  const addEventMutation = api.schedule.addEvent.useMutation();
-  const updateEventMutation = api.schedule.updateEvent.useMutation();
-  const deleteEventMutation = api.schedule.deleteEvent.useMutation();
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -50,8 +48,6 @@ export function WeekView({
     date.setDate(currentDate.getDate() - currentDate.getDay() + i);
     return date;
   });
-
-  const today = new Date();
 
   const handleCellClick = (date: Date, hour: number) => {
     if (!isDoctor) return;
@@ -65,73 +61,16 @@ export function WeekView({
   const handleEventClick = (event: CalendarEvent) => {
     if (!isDoctor) return;
     setSelectedEvent(event);
+    setIsEventModalOpen(true);
+  };
+
+  const handleEditClick = () => {
+    setIsEventModalOpen(false);
     setIsEventFormOpen(true);
   };
 
-  const handleEventSave = (eventData: Omit<CalendarEvent, 'id'>) => {
-    if (selectedEvent) {
-      updateEventMutation.mutate(
-        { ...eventData, id: selectedEvent.id },
-        {
-          onSuccess: () => {
-            updateEvent({ ...eventData, id: selectedEvent.id });
-            toast({
-              title: 'Подію успішно оновлено',
-            });
-            window.location.reload();
-          },
-          onError: (error) => {
-            toast({
-              title: 'Помилка',
-              description: error.message,
-              variant: 'destructive',
-            });
-          },
-        }
-      );
-    } else {
-      addEventMutation.mutate(eventData, {
-        onSuccess: () => {
-          addEvent(eventData);
-          toast({
-            title: 'Подію успішно додано',
-          });
-          window.location.reload();
-        },
-        onError: (error) => {
-          toast({
-            title: 'Помилка',
-            description: error.message,
-            variant: 'destructive',
-          });
-        },
-      });
-    }
-    setIsEventFormOpen(false);
-    setSelectedEvent(null);
-  };
-
-  const handleEventDelete = (eventId: string) => {
-    if (!selectedEvent) return;
-    deleteEventMutation.mutate(
-      { id: selectedEvent.id },
-      {
-        onSuccess: () => {
-          deleteEvent(eventId);
-          toast({
-            title: 'Подію успішно видалено',
-          });
-          window.location.reload();
-        },
-        onError: (error) => {
-          toast({
-            title: 'Помилка',
-            description: error.message,
-            variant: 'destructive',
-          });
-        },
-      }
-    );
+  const handleCloseModal = () => {
+    setIsEventModalOpen(false);
     setIsEventFormOpen(false);
     setSelectedEvent(null);
   };
@@ -148,10 +87,10 @@ export function WeekView({
             className="px-1 py-2 flex flex-col justify-center items-center border-l"
           >
             <div className="font-semibold text-foreground text-xs">
-              {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              {capitalize(format(date, 'EEE', { locale: uk }))}
             </div>
             <div
-              className={`text-xs w-fit py-1 rounded-[6px] px-1.5 text-muted-foreground ${today.getDate() === date.getDate() ? 'bg-primary text-white' : ''}`}
+              className={`text-xs w-fit py-1 rounded-[6px] px-1.5 text-muted-foreground ${isToday(date) ? 'bg-primary text-white' : ''}`}
             >
               {date.getDate()}
             </div>
@@ -187,7 +126,7 @@ export function WeekView({
               .map((event) => (
                 <div
                   key={event.id}
-                  className="absolute left-0 right-0 mx-0.5 p-1 rounded-sm text-[10px] overflow-hidden cursor-pointer"
+                  className="absolute transition hover:scale-[1.03] left-0 right-0 mx-0.5 p-1 rounded-sm text-[10px] overflow-hidden cursor-pointer"
                   style={getEventStyle(event)}
                   onClick={() => handleEventClick(event)}
                 >
@@ -203,17 +142,24 @@ export function WeekView({
         ))}
       </div>
       {isLoading && <Loader />}
-      <EventForm
-        isOpen={isEventFormOpen}
-        onClose={() => {
-          setIsEventFormOpen(false);
-          setSelectedEvent(null);
-        }}
-        onSave={handleEventSave}
-        onDelete={handleEventDelete}
-        defaultDate={selectedDate}
-        event={selectedEvent}
-      />
+
+      {isEventFormOpen && selectedEvent && isDoctor && (
+        <EventForm
+          isOpen={isEventFormOpen}
+          onClose={handleCloseModal}
+          defaultDate={selectedDate}
+          event={selectedEvent}
+        />
+      )}
+
+      {isEventModalOpen && selectedEvent && (
+        <EventModal
+          isOpen={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          eventId={selectedEvent?.id || ''}
+          onEdit={handleEditClick}
+        />
+      )}
     </div>
   );
 }

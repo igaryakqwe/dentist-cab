@@ -5,6 +5,9 @@ import { ToggleGroup, ToggleGroupItem } from '@components/ui/toggle-group';
 import { CalendarView } from '@/types/calendar';
 import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
+import { capitalize } from '@/utils/string-utils';
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -56,10 +59,7 @@ export function CalendarHeader({
           <ChevronLeft />
         </Button>
         <h2 className="text-sm font-medium text-foreground px-2">
-          {currentDate.toLocaleString('default', {
-            month: 'short',
-            year: 'numeric',
-          })}
+          {capitalize(format(currentDate, 'MMM yyyy', { locale: uk }))}
         </h2>
         <Button
           variant="outline"

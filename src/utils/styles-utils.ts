@@ -21,19 +21,21 @@ const chartColors = [
   '#34495E', // Slate Gray
 ];
 
-export const getColorByString = (doctorId: string): string => {
+export const getColorByString = (
+  doctorId: string,
+  opacity: number = 1
+): string => {
   let hash = 0;
   for (let i = 0; i < doctorId.length; i++) {
     hash = doctorId.charCodeAt(i) + ((hash << 5) - hash);
   }
   const colorIndex = Math.abs(hash) % chartColors.length;
-  return chartColors[colorIndex];
-};
+  const hex = chartColors[colorIndex];
 
-export const hexToRgba = (hex: string, opacity: number) => {
   const bigint = parseInt(hex.slice(1), 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
+
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };

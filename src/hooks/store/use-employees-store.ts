@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Employee, ModifiedEmployee } from '@/types/employee';
+import { Employee } from '@/types/employee';
 
 export interface EmployeeStore {
   employees: Employee[];

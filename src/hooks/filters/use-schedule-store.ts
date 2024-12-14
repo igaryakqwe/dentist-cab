@@ -1,41 +1,33 @@
 import { CalendarEvent } from '@/types/calendar';
 import { create } from 'zustand';
 
-export interface ScheduleFilters {
-  search: string;
-  doctors: string[];
-}
-
-interface IUseScheduleStore {
+interface ScheduleState {
   events: CalendarEvent[];
   setEvents: (events: CalendarEvent[]) => void;
-  addEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+  addEvent: (event: CalendarEvent) => void;
   updateEvent: (event: CalendarEvent) => void;
-  deleteEvent: (eventId: string) => void;
+  deleteEvent: (id: string) => void;
 }
 
-const useScheduleStore = create<IUseScheduleStore>((set) => ({
+const useScheduleStore = create<ScheduleState>((set) => ({
   events: [],
-  filters: {
-    search: '',
-    doctors: [],
-  },
-  filteredEvents: [],
   setEvents: (events) => set({ events }),
-  addEvent: (event) => {
-    const newEvent: CalendarEvent = {
-      ...event,
-      id: Math.random().toString(36).substr(2, 9),
-    };
-    set((state) => ({ events: [...state.events, newEvent] }));
-  },
-  updateEvent: (event) =>
+  addEvent: (event) =>
     set((state) => ({
-      events: state.events.map((e) => (e.id === event.id ? event : e)),
+      events: [...state.events, event],
     })),
-  deleteEvent: (eventId) =>
+  updateEvent: (updatedEvent) =>
+    set((state) => {
+      console.log('updatedEvent', updatedEvent);
+      return {
+        events: state.events.map((event) =>
+          event.id === updatedEvent.id ? updatedEvent : event
+        ),
+      };
+    }),
+  deleteEvent: (id) =>
     set((state) => ({
-      events: state.events.filter((e) => e.id !== eventId),
+      events: state.events.filter((event) => event.id !== id),
     })),
 }));
 
