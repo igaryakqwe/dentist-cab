@@ -32,3 +32,35 @@ export const isToday = (date: Date): boolean => {
     date.getFullYear() === today.getFullYear()
   );
 };
+
+export const differenceInYears = (date: Date): number => {
+  const today = new Date();
+  const birthDate = new Date(date);
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const month = today.getMonth() - birthDate.getMonth();
+
+  if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age;
+};
+
+export const formatAge = (date: Date): string => {
+  const age = differenceInYears(date);
+  let suffix = '';
+
+  if (age % 10 === 1 && age % 100 !== 11) {
+    suffix = 'рік';
+  } else if (
+    [2, 3, 4].includes(age % 10) &&
+    ![12, 13, 14].includes(age % 100)
+  ) {
+    suffix = 'роки';
+  } else {
+    suffix = 'років';
+  }
+
+  return `${age} ${suffix}`;
+};

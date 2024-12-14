@@ -33,6 +33,7 @@ import { Calendar } from '@components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/trpc/client';
 import { createAvatarPath } from '@/utils/create-avatar-path';
+import { uk } from 'date-fns/locale';
 
 export const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -147,7 +148,7 @@ const CompleteProfileForm = () => {
                 control={form.control}
                 name="birthDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col w-full justify-end">
+                  <FormItem className="flex flex-col w-full">
                     <FormLabel>Дата народження</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -155,12 +156,12 @@ const CompleteProfileForm = () => {
                           <Button
                             variant="outline"
                             className={cn(
-                              'pl-3 text-left font-normal',
+                              'w-full font-normal',
                               !field.value && 'text-muted-foreground'
                             )}
                           >
                             {field.value ? (
-                              format(field.value, 'PPP')
+                              format(field.value, 'PP', { locale: uk })
                             ) : (
                               <span>Оберіть дату</span>
                             )}
@@ -171,11 +172,12 @@ const CompleteProfileForm = () => {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
+                          locale={uk}
+                          captionLayout="dropdown"
                           selected={field.value || new Date('2000-01-01')}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
+                          fromYear={1960}
+                          toYear={new Date().getFullYear()}
                         />
                       </PopoverContent>
                     </Popover>

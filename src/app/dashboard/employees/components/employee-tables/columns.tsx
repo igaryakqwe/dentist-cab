@@ -4,6 +4,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Employee } from '@/types/employee';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
+import { UserRound } from 'lucide-react';
+import * as React from 'react';
 
 export const columns: ColumnDef<Employee>[] = [
   {
@@ -12,7 +14,14 @@ export const columns: ColumnDef<Employee>[] = [
     cell: ({ row }) => (
       <Avatar>
         <AvatarImage src={row.original.image as string} alt="avatar" />
-        <AvatarFallback>{row.original.email[0]}</AvatarFallback>
+        <AvatarFallback>
+          <UserRound
+            size={16}
+            strokeWidth={2}
+            className="opacity-60"
+            aria-hidden="true"
+          />
+        </AvatarFallback>
       </Avatar>
     ),
   },

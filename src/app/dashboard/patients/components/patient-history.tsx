@@ -9,7 +9,8 @@ import {
 import { PatientEvent } from '@/types/patient';
 import { FC } from 'react';
 import { CalendarCheck } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
 
 interface PatientHistoryProps {
   patientEvents: PatientEvent[];
@@ -19,7 +20,9 @@ const PatientHistory: FC<PatientHistoryProps> = ({ patientEvents }) => {
   const eventHeight = 155;
   const eventLineHeight = (patientEvents.length - 1) * eventHeight;
 
-  console.log(eventLineHeight);
+  const sortedPatientEvents = patientEvents.sort(
+    (a, b) => b.startDate.getTime() - a.startDate.getTime()
+  );
 
   return (
     <Card className="max-h-[85vh] overflow-y-auto">
@@ -33,8 +36,8 @@ const PatientHistory: FC<PatientHistoryProps> = ({ patientEvents }) => {
             className={`absolute left-[11px] top-1 w-0.5 bg-primary/20`}
             style={{ height: `${eventLineHeight}px` }}
           />
-          {patientEvents.length > 0 ? (
-            patientEvents.map((record, index) => (
+          {sortedPatientEvents.length > 0 ? (
+            sortedPatientEvents.map((record, index) => (
               <div key={index} className="mb-8 flex items-start">
                 <div className="flex flex-col items-center mr-4">
                   <div className="z-10 rounded-full h-6 w-6 flex items-center outline outline-[10px] outline-background justify-center bg-secondary text-blue-800">
@@ -49,7 +52,7 @@ const PatientHistory: FC<PatientHistoryProps> = ({ patientEvents }) => {
                     <div className="flex items-center justify-between">
                       <Badge>{record.service.duration} хв</Badge>
                       <span className="text-sm text-muted-foreground">
-                        {record.startDate.toDateString()}
+                        {format(record.startDate, 'PP', { locale: uk })}
                       </span>
                     </div>
                     <CardTitle className="text-base">

@@ -3,6 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { data } from '@/constants/nav';
 import UserDropdown from '@components/user-dropdown';
 import { useSession } from 'next-auth/react';
+import { UserRound } from 'lucide-react';
+import * as React from 'react';
 
 export function UserNav() {
   const session = useSession();
@@ -17,7 +19,14 @@ export function UserNav() {
       <div className="flex cursor-pointer items-center gap-2 px-0.5 py-0.5 text-left text-sm">
         <Avatar className="h-8 w-8 rounded-full">
           <AvatarImage src={user.image as string} alt={user.name || 'avatar'} />
-          <AvatarFallback className="rounded-lg">{fallback}</AvatarFallback>
+          <AvatarFallback>
+            <UserRound
+              size={16}
+              strokeWidth={2}
+              className="opacity-60"
+              aria-hidden="true"
+            />
+          </AvatarFallback>
         </Avatar>
       </div>
     </UserDropdown>

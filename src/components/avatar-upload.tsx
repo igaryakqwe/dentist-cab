@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from 'react';
-import { Edit } from 'lucide-react';
+import { Edit, UserRound } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
+import * as React from 'react';
 
 interface AvatarUploadProps {
   onAvatarChange: (file: File) => void;
@@ -32,7 +33,14 @@ export default function AvatarUpload({
       <label className="relative w-24 h-24 cursor-pointer group">
         <Avatar className="h-full w-full rounded-full">
           <AvatarImage src={previewUrl} alt="avatar" />
-          <AvatarFallback className="rounded-lg">No image</AvatarFallback>
+          <AvatarFallback>
+            <UserRound
+              size={32}
+              strokeWidth={2}
+              className="opacity-60"
+              aria-hidden="true"
+            />
+          </AvatarFallback>
         </Avatar>
         <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <Edit className="h-6 w-6 text-white" />

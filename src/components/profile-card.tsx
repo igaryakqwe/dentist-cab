@@ -1,11 +1,13 @@
 import { Card, CardContent } from '@components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
 import { Badge } from '@components/ui/badge';
-import { CalendarFold, Dna, Mail } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { CalendarFold, Dna, Mail, UserRound } from 'lucide-react';
 import { format } from 'date-fns';
 import { User } from 'next-auth';
 import { FC } from 'react';
+import { uk } from 'date-fns/locale';
+import { formatAge } from '@/utils/date-utils';
+import * as React from 'react';
 
 interface ProfileCardProps {
   user: User;
@@ -22,7 +24,7 @@ const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
 
   const role = user?.role === 'USER' ? 'Пацієнт' : 'Лікар';
   const birthDate = user?.birthDate
-    ? format(new Date(user?.birthDate as unknown as string), 'dd.MM.yyyy')
+    ? format(user?.birthDate, 'PP', { locale: uk })
     : 'Не вказано';
 
   const gender = user?.gender === 'MALE' ? 'Чоловік' : 'Жінка';
@@ -37,7 +39,14 @@ const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
                 src={user?.image as string}
                 alt={user?.email as string}
               />
-              <AvatarFallback>{fallback?.toUpperCase()}</AvatarFallback>
+              <AvatarFallback>
+                <UserRound
+                  size={32}
+                  strokeWidth={2}
+                  className="opacity-60"
+                  aria-hidden="true"
+                />
+              </AvatarFallback>
             </Avatar>
 
             <Badge
@@ -61,7 +70,9 @@ const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
             </div>
             <div className="flex items-center gap-2">
               <CalendarFold className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{birthDate}</span>
+              <span className="text-sm">
+                {birthDate} ({formatAge(user.birthDate)})
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Dna className="h-4 w-4 text-muted-foreground" />

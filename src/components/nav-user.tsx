@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/sidebar';
 import UserDropdown from '@components/user-dropdown';
 import { useSession } from 'next-auth/react';
+import { UserRound } from 'lucide-react';
+import * as React from 'react';
 
 export function NavUser({}) {
   const session = useSession();
@@ -31,8 +33,13 @@ export function NavUser({}) {
                   src={user.image as string}
                   alt={user.name || 'avatar'}
                 />
-                <AvatarFallback className="rounded-lg">
-                  {fallback}
+                <AvatarFallback>
+                  <UserRound
+                    size={16}
+                    strokeWidth={2}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

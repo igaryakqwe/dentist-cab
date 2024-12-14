@@ -5,6 +5,8 @@ import { Patient } from '@/types/patient';
 import { getDateOfBirth } from '@/utils/date-utils';
 import { CellAction } from '../components/cell-action';
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
+import { UserRound } from 'lucide-react';
+import * as React from 'react';
 
 export const columns: ColumnDef<Patient>[] = [
   {
@@ -13,7 +15,14 @@ export const columns: ColumnDef<Patient>[] = [
     cell: ({ row }) => (
       <Avatar>
         <AvatarImage src={row.original.image as string} alt="avatar" />
-        <AvatarFallback>{row.original.email[0]}</AvatarFallback>
+        <AvatarFallback>
+          <UserRound
+            size={16}
+            strokeWidth={2}
+            className="opacity-60"
+            aria-hidden="true"
+          />
+        </AvatarFallback>
       </Avatar>
     ),
   },
