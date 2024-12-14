@@ -36,18 +36,17 @@ const DentistFilter: FC<DentistFilterProps> = ({ doctors, setDoctors }) => {
 
   const { data: fetchedDoctors, isLoading } = api.users.getEmployee.useQuery();
 
-  const filteredDoctors = fetchedDoctors?.filter((doctor) =>
-    `${doctor.name} ${doctor.surname}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
   const handleSelect = (currentValue: string) => {
-    setSelectedValues((prev) =>
-      prev.includes(currentValue)
-        ? prev.filter((value) => value !== currentValue)
-        : [...prev, currentValue]
+    const selectedDoctor = fetchedDoctors?.find(
+      (doctor) => `${doctor.name} ${doctor.surname}` === currentValue
     );
+    if (selectedDoctor) {
+      setSelectedValues((prev) =>
+        prev.includes(selectedDoctor.id)
+          ? prev.filter((value) => value !== selectedDoctor.id)
+          : [...prev, selectedDoctor.id]
+      );
+    }
   };
 
   useEffect(() => {
@@ -85,10 +84,10 @@ const DentistFilter: FC<DentistFilterProps> = ({ doctors, setDoctors }) => {
             {isLoading && <CommandLoading />}
             <CommandEmpty>Не знайдено</CommandEmpty>
             <CommandGroup>
-              {filteredDoctors?.map((doctor) => (
+              {fetchedDoctors?.map((doctor) => (
                 <CommandItem
                   key={doctor.id}
-                  value={doctor.id}
+                  value={`${doctor.name} ${doctor.surname}`}
                   onSelect={handleSelect}
                 >
                   <Check
