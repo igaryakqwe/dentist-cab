@@ -32,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   totalItems: number;
   isLoading?: boolean;
+  rowClassName?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -39,6 +40,7 @@ export function DataTable<TData, TValue>({
   data,
   totalItems,
   isLoading,
+  rowClassName,
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
@@ -113,6 +115,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  className={rowClassName ? rowClassName(row.original) : ''}
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (

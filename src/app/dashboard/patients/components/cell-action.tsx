@@ -22,7 +22,7 @@ export const CellAction = ({ patient }: CellActionProps) => {
       {isDoctor && (
         <Link
           href="/dashboard/schedule"
-          className={buttonVariants({ variant: 'secondary', size: 'icon' })}
+          className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
         >
           <NotebookPen className="h-4 w-4" />
         </Link>

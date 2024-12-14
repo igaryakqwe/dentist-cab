@@ -10,8 +10,10 @@ import { usePatientFilter } from '@/hooks/filters/use-patients-filter';
 import { DataTableFilterBox } from '@components/ui/table/data-table-filter-box';
 import { DataTableResetFilter } from '@components/ui/table/data-table-reset-filter';
 import { GENDER_OPTIONS } from '@/app/dashboard/patients/constants/gender';
+import { useSession } from 'next-auth/react';
 
 const PatientsTableContent = () => {
+  const { data: session } = useSession();
   const { data, isLoading } = api.users.getPatients.useQuery();
   const { patients, setPatients } = usePatientsStore((state) => state);
   const {
@@ -24,6 +26,8 @@ const PatientsTableContent = () => {
     resetFilters,
   } = usePatientFilter(data || []);
 
+  const userId = session?.user.id;
+
   useEffect(() => {
     if (data && !isLoading) {
       setPatients(data);
@@ -31,6 +35,12 @@ const PatientsTableContent = () => {
   }, [isLoading]);
 
   const totalItems = data?.length || 0;
+
+  const sortedPatients = patients.sort((a, b) => {
+    if (a.id === userId) return -1;
+    if (b.id === userId) return 1;
+    return 0;
+  });
 
   return (
     <>
@@ -54,9 +64,12 @@ const PatientsTableContent = () => {
       </div>
       <DataTable
         columns={columns}
-        data={patients}
+        data={sortedPatients}
         totalItems={totalItems}
         isLoading={isLoading}
+        rowClassName={(row) =>
+          row.id === userId ? 'bg-primary/10 hover:bg-primary/20' : ''
+        }
       />
     </>
   );
