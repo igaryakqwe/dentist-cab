@@ -31,7 +31,6 @@ export default async function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} overflow-y-hidden antialiased`}
       >
         <NextTopLoader showSpinner={false} />
-
         <Providers>
           {children}
           <Toaster richColors />

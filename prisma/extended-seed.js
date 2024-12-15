@@ -7,7 +7,7 @@ async function main() {
 
   // Generate 20 doctors with ADMIN or MANAGER roles
   const doctors = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) {
     doctors.push({
       id: faker.string.uuid(),
       name: faker.person.firstName(),
@@ -30,7 +30,7 @@ async function main() {
 
   // Generate 80 patients with USER role
   const patients = [];
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 90; i++) {
     patients.push({
       id: faker.string.uuid(),
       name: faker.person.firstName(),

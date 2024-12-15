@@ -113,7 +113,7 @@ export function PieGraph({ analyticsData }: AreaGraphProps) {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Всього
                         </tspan>
                       </text>
                     );

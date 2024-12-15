@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Employee, ModifiedEmployee } from '@/types/employee';
+import { Employee } from '@/types/employee';
 import { api } from '@/lib/trpc/client';
 import { Check, Loader2, X } from 'lucide-react';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface UpdateUserModalProps {
   isOpen: boolean;
@@ -27,7 +27,6 @@ export const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
   onClose,
   employee,
 }) => {
-  const { toast } = useToast();
   const { employees, setEmployees } = useEmployeesStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
   const {
@@ -58,13 +57,10 @@ export const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
           });
           setEmployees(updatedEmployees);
           setIsEditing(false);
+          toast.success('Посаду працівника успішно оновлено');
         },
-        onError: (error) => {
-          toast({
-            title: 'Помилка при оновлені позиції',
-            description: error.message,
-            variant: 'destructive',
-          });
+        onError: () => {
+          toast('Помилка при оновлені позиції');
         },
       }
     );

@@ -24,7 +24,7 @@ import PatientSelector from '@/app/dashboard/schedule/components/calendar/patien
 import { calculateEndTime } from '@/utils/date-utils';
 import ServiceSelector from '@/app/dashboard/schedule/components/calendar/service-selector';
 import { api } from '@/lib/trpc/client';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { Loader } from '@/app/dashboard/schedule/components/calendar/loader';
 
@@ -107,28 +107,21 @@ export function EventForm({
     try {
       if (event) {
         await updateEventMutation.mutateAsync(eventData);
-        toast({
-          title: 'Подію успішно оновлено',
-        });
         setEvents((prevEvents) =>
           prevEvents.map((prevEvent) =>
             prevEvent.id === event.id ? eventData : prevEvent
           )
         );
+        toast.success('Подію успішно оновлено');
       } else {
-        const newEvent = (await addEventMutation.mutateAsync(
+        (await addEventMutation.mutateAsync(
           eventData
         )) as unknown as CalendarEvent;
-        setEvents((prevEvents) => [...prevEvents, newEvent]);
-        toast({
-          title: 'Подію успішно створено',
-        });
+        setEvents((prevEvents) => [...prevEvents, eventData]);
+        toast.success('Подію успішно створено');
       }
     } catch (error) {
-      toast({
-        title: 'Помилка при збереженні події',
-        variant: 'destructive',
-      });
+      toast.error('Помилка при збереженні події');
     }
     onClose();
   };
@@ -137,17 +130,12 @@ export function EventForm({
     if (!isDoctor && !event) return;
     try {
       await deleteEventMutation.mutateAsync({ id: eventId });
-      toast({
-        title: 'Подію успішно видалено',
-      });
+      toast.success('Подію успішно видалено');
       setEvents((prevEvents) =>
         prevEvents.filter((prevEvent) => prevEvent.id !== eventId)
       );
     } catch (error) {
-      toast({
-        title: 'Помилка при видаленні події',
-        variant: 'destructive',
-      });
+      toast.error('Помилка при видаленні події');
     }
     onClose();
   };
@@ -321,7 +309,7 @@ export function EventForm({
                   event ? 'justify-between' : 'justify-end'
                 )}
               >
-                {event && (
+                {isDoctor && event && (
                   <Button
                     type="button"
                     variant="destructive"

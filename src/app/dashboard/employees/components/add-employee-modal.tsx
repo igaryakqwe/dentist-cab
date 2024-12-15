@@ -28,7 +28,7 @@ import useDebounce from '@/hooks/use-debounce';
 import UserCard from '@components/user-card';
 import { cn } from '@/utils/cn';
 import { api } from '@/lib/trpc/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
 import { IUser } from '@/types/user';
 import { User } from 'next-auth';
@@ -41,7 +41,6 @@ const formSchema = z.object({
 export function AddEmployeeModal() {
   const { data } = useSession();
   const role = data?.user?.role;
-  const { toast } = useToast();
   const { employees, setEmployees } = useEmployeesStore((state) => state);
   const [users, setUsers] = useState<IUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
@@ -94,13 +93,10 @@ export function AddEmployeeModal() {
             setUsers([]);
             setEmployees([...employees, selectedUser]);
             setSelectedUser(null);
+            toast.success('Працівника успішно додано');
           },
-          onError: (error) => {
-            toast({
-              title: 'Помилка',
-              description: error.message,
-              variant: 'destructive',
-            });
+          onError: () => {
+            toast('Помилка при додаванні працівника');
           },
         }
       );

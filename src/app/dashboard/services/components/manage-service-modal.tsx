@@ -23,10 +23,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@components/ui/textarea';
 import { api } from '@/lib/trpc/client';
-import { useToast } from '@/hooks/use-toast';
 import useServicesStore from '@/hooks/store/use-services-store';
-import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 interface ManageServiceModalProps {
   service?: Service;
@@ -40,7 +39,6 @@ const ManageServiceModal: FC<ManageServiceModalProps> = ({
   isOpen,
 }) => {
   const { data } = useSession();
-  const { toast } = useToast();
   const { addService, updateService } = useServicesStore((state) => state);
 
   const form = useForm<Service>({
@@ -75,15 +73,11 @@ const ManageServiceModal: FC<ManageServiceModalProps> = ({
           onSuccess: () => {
             setIsOpen(false);
             updateService(data);
-            toast({
-              title: 'Послугу успішно оновлено',
-            });
+            toast.success('Послугу успішно оновлено');
           },
           onError: (error) => {
-            toast({
-              title: 'Помилка',
+            toast.error('Помилка', {
               description: error.message,
-              variant: 'destructive',
             });
           },
         })
@@ -98,16 +92,11 @@ const ManageServiceModal: FC<ManageServiceModalProps> = ({
             onSuccess: () => {
               setIsOpen(false);
               addService(data);
-              toast({
-                title: 'Послугу успішно додано',
-              });
               window.location.reload();
             },
             onError: (error) => {
-              toast({
-                title: 'Помилка',
+              toast.error('Помилка', {
                 description: error.message,
-                variant: 'destructive',
               });
             },
           }

@@ -1,19 +1,10 @@
 'use client';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Edit, MoreHorizontal, Trash } from 'lucide-react';
+import { Edit, Trash } from 'lucide-react';
 import { useState } from 'react';
-import { UpdateUserModal } from '@/app/dashboard/employees/components/update-user-modal';
-import { ModifiedEmployee } from '@/types/employee';
 import { api } from '@/lib/trpc/client';
-import useEmployeesStore from '@/hooks/store/use-employees-store';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Service } from '@/types/service';
 import ManageServiceModal from '@/app/dashboard/services/components/manage-service-modal';
 import useServicesStore from '@/hooks/store/use-services-store';
@@ -25,7 +16,6 @@ interface CellActionProps {
 
 export const CellAction = ({ service }: CellActionProps) => {
   const { data } = useSession();
-  const { toast } = useToast();
   const { deleteService } = useServicesStore((state) => state);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -38,19 +28,13 @@ export const CellAction = ({ service }: CellActionProps) => {
       { id: service.id },
       {
         onSuccess: () => {
-          toast({
-            title: 'Послугу успішно видалено',
-          });
+          toast('Послугу успішно видалено');
           deleteService(service.id);
           setDeleteOpen(false);
           window.location.reload();
         },
-        onError: (error) => {
-          toast({
-            title: 'Помилка',
-            description: error.message,
-            variant: 'destructive',
-          });
+        onError: () => {
+          toast.error('Помилка при видаленні послуги');
         },
       }
     );

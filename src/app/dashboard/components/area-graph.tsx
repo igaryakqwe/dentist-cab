@@ -1,6 +1,5 @@
 'use client';
 
-import { TrendingUp } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { translateMonth } from '@/utils/translate-month';
 
@@ -33,7 +32,28 @@ interface AreaGraphProps {
   analyticsData: IGenderAnalytics[];
 }
 
+const monthOrder = [
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+  'January',
+  'February',
+  'March',
+  'April',
+];
+
 export function AreaGraph({ analyticsData }: AreaGraphProps) {
+  const sortedData = [...analyticsData].sort((a, b) => {
+    return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
+  });
+
+  console.log(sortedData);
+
   return (
     <Card>
       <CardHeader>
@@ -49,8 +69,9 @@ export function AreaGraph({ analyticsData }: AreaGraphProps) {
         >
           <AreaChart
             accessibilityLayer
-            data={analyticsData}
+            data={sortedData}
             margin={{
+              top: 6,
               left: 12,
               right: 12,
             }}

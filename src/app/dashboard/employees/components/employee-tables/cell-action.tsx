@@ -7,8 +7,8 @@ import { UpdateUserModal } from '@/app/dashboard/employees/components/update-use
 import { Employee } from '@/types/employee';
 import { api } from '@/lib/trpc/client';
 import useEmployeesStore from '@/hooks/store/use-employees-store';
-import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 interface CellActionProps {
   employee: Employee;
@@ -18,7 +18,6 @@ export const CellAction = ({ employee }: CellActionProps) => {
   const { data } = useSession();
   const role = data?.user?.role;
   const { employees, setEmployees } = useEmployeesStore((state) => state);
-  const { toast } = useToast();
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -33,12 +32,10 @@ export const CellAction = ({ employee }: CellActionProps) => {
         );
         setEmployees(updatedEmployees);
         setDeleteOpen(false);
+        toast.success('Працівника успішно звільнено');
       },
       onError: () => {
-        toast({
-          title: 'Помилка при видаленні працівника',
-          variant: 'destructive',
-        });
+        toast.error('Помилка при видаленні працівника');
       },
     });
   };

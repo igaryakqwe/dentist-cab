@@ -30,10 +30,10 @@ import { cn } from '@/utils/cn';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@components/ui/calendar';
-import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/trpc/client';
 import { createAvatarPath } from '@/utils/create-avatar-path';
 import { uk } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 export const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -44,7 +44,6 @@ export const formSchema = z.object({
 });
 
 const CompleteProfileForm = () => {
-  const { toast } = useToast();
   const { data, update } = useSession();
   const user = data?.user;
 
@@ -92,11 +91,7 @@ const CompleteProfileForm = () => {
       await update({ user: { ...user, ...data } });
       window.location.reload();
     } catch (e) {
-      toast({
-        title: 'Помилка',
-        description: 'Не вдалося зберегти профіль',
-        variant: 'destructive',
-      });
+      toast.error('Не вдалося зберегти профіль');
     }
   };
 

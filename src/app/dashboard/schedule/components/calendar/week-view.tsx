@@ -10,7 +10,7 @@ import { EventModal } from './event-modal';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { capitalize } from '@/utils/string-utils';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface WeekViewProps {
   data: CalendarEvent[];
@@ -64,10 +64,7 @@ const WeekView = ({
 
   const handleEventClick = (event: CalendarEvent) => {
     if (!isDoctor && event.patientId !== user?.id) {
-      toast({
-        title: 'Помилка',
-        description: 'Ви не маєте доступу до цього запису',
-      });
+      toast.info('Ви не маєте доступу до цього запису');
       return;
     }
     setSelectedEvent(event);

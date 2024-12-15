@@ -21,6 +21,7 @@ import {
 import { api } from '@/lib/trpc/client';
 import { CommandLoading } from 'cmdk';
 import { FC, useEffect } from 'react';
+import { getColorByString } from '@/utils/styles-utils';
 
 interface DentistFilterProps {
   doctors: string[];
@@ -84,23 +85,33 @@ const DentistFilter: FC<DentistFilterProps> = ({ doctors, setDoctors }) => {
             {isLoading && <CommandLoading />}
             <CommandEmpty>Не знайдено</CommandEmpty>
             <CommandGroup>
-              {fetchedDoctors?.map((doctor) => (
-                <CommandItem
-                  key={doctor.id}
-                  value={`${doctor.name} ${doctor.surname}`}
-                  onSelect={handleSelect}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      selectedValues.includes(doctor.id)
-                        ? 'opacity-100'
-                        : 'opacity-0'
-                    )}
-                  />
-                  {`${doctor.name} ${doctor.surname}`}
-                </CommandItem>
-              ))}
+              {fetchedDoctors?.map((doctor) => {
+                const backgroundColor = getColorByString(
+                  doctor.surname || '',
+                  0.3
+                );
+                return (
+                  <CommandItem
+                    key={doctor.id}
+                    value={`${doctor.name} ${doctor.surname}`}
+                    onSelect={handleSelect}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        selectedValues.includes(doctor.id)
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                      )}
+                    />
+                    <div
+                      style={{ backgroundColor }}
+                      className="size-4 rounded-full"
+                    />
+                    <span>{`${doctor.name} ${doctor.surname}`}</span>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

@@ -45,16 +45,14 @@ export const getEventStyle = (event: EventWithPosition) => {
   const height =
     (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 40;
 
-  const fullname = `${event?.doctor?.surname} ${event?.doctor?.name}`;
-
-  const backgroundColor = getColorByString(fullname, 0.2);
+  const backgroundColor = getColorByString(event?.doctor?.surname || '', 0.2);
 
   const width = 100 / event.totalColumns;
   const left = event.column * width;
 
   return {
     top: `${top}px`,
-    height: `${height}px`,
+    minHeight: `${height}px`,
     backgroundColor,
     width: `calc(${width}% - 3px)`,
     left: `calc(${left}%`,
