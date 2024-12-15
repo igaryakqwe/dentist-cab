@@ -6,7 +6,7 @@ import employeeMapper from '@/utils/employee-mapper';
 import React from 'react';
 
 export default async function EmployeeListingPage() {
-  const employees = await trpc.users.getEmployee();
+  const employees = await trpc.users.getEmployee.query();
   const totalUsers = employees.length;
 
   if (totalUsers === 0) return null;

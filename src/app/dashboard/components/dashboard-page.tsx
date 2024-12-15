@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 
 const DashboardPage = async () => {
-  const gendersAnalytics = await trpc.analytics.getGenderStatistics();
-  const topServices = await trpc.analytics.getTopServices();
-  const totalPatientsResponse = await trpc.analytics.getTotalPatients();
-  const totalDoctorsResponse = await trpc.analytics.getTotalDoctors();
-  const totalRevenueResponse = await trpc.analytics.getTotalRevenue();
-  const totalEventsResponse = await trpc.analytics.getTotalEvents();
+  const gendersAnalytics = await trpc.analytics.getGenderStatistics.query();
+  const topServices = await trpc.analytics.getTopServices.query();
+  const totalPatientsResponse = await trpc.analytics.getTotalPatients.query();
+  const totalDoctorsResponse = await trpc.analytics.getTotalDoctors.query();
+  const totalRevenueResponse = await trpc.analytics.getTotalRevenue.query();
+  const totalEventsResponse = await trpc.analytics.getTotalEvents.query();
 
   const totalPatients = totalPatientsResponse.totalPatients;
   const totalDoctors = totalDoctorsResponse.totalDoctors;
