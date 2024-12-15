@@ -52,8 +52,6 @@ export function AreaGraph({ analyticsData }: AreaGraphProps) {
     return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
   });
 
-  console.log(sortedData);
-
   return (
     <Card>
       <CardHeader>

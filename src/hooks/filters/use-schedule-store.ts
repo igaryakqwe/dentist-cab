@@ -18,7 +18,6 @@ const useScheduleStore = create<ScheduleState>((set) => ({
     })),
   updateEvent: (updatedEvent) =>
     set((state) => {
-      console.log('updatedEvent', updatedEvent);
       return {
         events: state.events.map((event) =>
           event.id === updatedEvent.id ? updatedEvent : event
