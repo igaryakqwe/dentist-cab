@@ -15,7 +15,6 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
-  const fallback = user?.name ? user.name[0] : user?.email?.at(0) || 'No image';
   const fullName = user?.name
     ? user.surname
       ? `${user.name} ${user.surname}`
@@ -71,7 +70,8 @@ const ProfileCard: FC<ProfileCardProps> = ({ user, className }) => {
             <div className="flex items-center gap-2">
               <CalendarFold className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm">
-                {birthDate} ({formatAge(user.birthDate)})
+                {birthDate}
+                {user.birthDate && <span>({formatAge(user.birthDate)})</span>}
               </span>
             </div>
             <div className="flex items-center gap-2">
