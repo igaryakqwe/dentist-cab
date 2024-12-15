@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CalendarHeader } from './calendar-header';
 import { CalendarSidebar } from './calendar-sidebar';
 import WeekView from './week-view';
-import type { CalendarEvent, CalendarView } from '@/types/calendar';
+import type { CalendarView } from '@/types/calendar';
 import { api } from '@/lib/trpc/client';
-import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { useQueryState } from 'nuqs';
 import { format } from 'date-fns';
 

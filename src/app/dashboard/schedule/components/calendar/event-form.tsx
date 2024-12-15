@@ -170,7 +170,7 @@ export function EventForm({
     }
   };
 
-  if ((!event && !isLoading) || !isDoctor) return null;
+  if (!isDoctor) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

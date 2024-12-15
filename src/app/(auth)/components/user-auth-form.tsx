@@ -14,6 +14,7 @@ import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import GoogleSignInButton from '@/app/(auth)/components/google-auth-button';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -42,6 +43,7 @@ export default function UserAuthForm() {
       password: data.password,
       callbackUrl: '/dashboard',
     });
+    toast.success('Успішно увійшли!');
   };
 
   return (
@@ -89,7 +91,7 @@ export default function UserAuthForm() {
           />
           <Button
             loading={isSubmitting}
-            className="ml-auto w-full font-semibold"
+            className="ml-auto text-white w-full"
             type="submit"
           >
             Увійти

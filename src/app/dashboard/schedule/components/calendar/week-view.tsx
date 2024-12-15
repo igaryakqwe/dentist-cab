@@ -47,7 +47,9 @@ const WeekView = ({
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(currentDate);
-    date.setDate(currentDate.getDate() - currentDate.getDay() + i);
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1) + i;
+    date.setDate(diff);
     return date;
   });
 
@@ -156,7 +158,7 @@ const WeekView = ({
       </div>
       {isLoading && <Loader />}
 
-      {isEventFormOpen && selectedEvent && isDoctor && (
+      {isEventFormOpen && (
         <EventForm
           setEvents={setEvents}
           isOpen={isEventFormOpen}

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Providers from '@/lib/providers';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from 'sonner';
 import NextTopLoader from 'nextjs-toploader';
 
 import { GeistSans } from 'geist/font/sans';
@@ -34,7 +34,7 @@ export default async function RootLayout({
 
         <Providers>
           {children}
-          <Toaster />
+          <Toaster richColors />
         </Providers>
       </body>
     </html>
