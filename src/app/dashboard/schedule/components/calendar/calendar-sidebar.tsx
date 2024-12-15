@@ -16,12 +16,6 @@ export function CalendarSidebar({
   doctors,
   setDoctors,
 }: CalendarSidebarProps) {
-  useEffect(() => {
-    if (doctors.length === 0) {
-      setDoctors(null);
-    }
-  }, [doctors]);
-
   return (
     <aside className="p-4 space-y-6 bg-background rounded-l-lg">
       <Calendar

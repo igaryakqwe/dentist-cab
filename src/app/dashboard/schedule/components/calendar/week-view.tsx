@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CalendarEvent } from '@/types/calendar';
 import { getTime, isToday } from '@/utils/date-utils';
-import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { Loader } from './loader';
 import { filterEvents } from '@/utils/filter-utils';
 import { useSession } from 'next-auth/react';
@@ -11,36 +10,39 @@ import { EventModal } from './event-modal';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { capitalize } from '@/utils/string-utils';
+import { toast } from '@/hooks/use-toast';
 
 interface WeekViewProps {
+  data: CalendarEvent[];
   currentDate: Date;
   isLoading: boolean;
   search: string | null;
   doctors: string[];
 }
 
-export function WeekView({
+const WeekView = ({
+  data,
   currentDate,
   isLoading,
   search,
   doctors,
-}: WeekViewProps) {
-  const { data } = useSession();
-  const user = data?.user;
+}: WeekViewProps) => {
+  const { data: session } = useSession();
+  const user = session?.user;
   const isDoctor = user?.role !== 'USER';
 
   const filters = { search, doctors: doctors || [] };
 
-  const events = useScheduleStore((state) => state.events);
-
-  const filteredEvents = filterEvents(events || [], filters);
-
+  const [events, setEvents] = useState<CalendarEvent[]>(data);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
+
+  const filteredEvents = filterEvents(events || [], filters);
+  const groupedEvents = getOverlappingGroups(filteredEvents);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -59,12 +61,19 @@ export function WeekView({
   };
 
   const handleEventClick = (event: CalendarEvent) => {
-    if (!isDoctor) return;
+    if (!isDoctor && event.patientId !== user?.id) {
+      toast({
+        title: 'Помилка',
+        description: 'Ви не маєте доступу до цього запису',
+      });
+      return;
+    }
     setSelectedEvent(event);
     setIsEventModalOpen(true);
   };
 
   const handleEditClick = () => {
+    if (!isDoctor) return;
     setIsEventModalOpen(false);
     setIsEventFormOpen(true);
   };
@@ -75,7 +84,11 @@ export function WeekView({
     setSelectedEvent(null);
   };
 
-  const groupedEvents = getOverlappingGroups(filteredEvents);
+  useEffect(() => {
+    if (data.length > 0 && events.length === 0) {
+      setEvents(data);
+    }
+  }, [data, events]);
 
   return (
     <div className="flex-1 relative max-h-[85vh] border overflow-auto rounded-[6px] bg-background">
@@ -145,6 +158,7 @@ export function WeekView({
 
       {isEventFormOpen && selectedEvent && isDoctor && (
         <EventForm
+          setEvents={setEvents}
           isOpen={isEventFormOpen}
           onClose={handleCloseModal}
           defaultDate={selectedDate}
@@ -162,4 +176,6 @@ export function WeekView({
       )}
     </div>
   );
-}
+};
+
+export default WeekView;

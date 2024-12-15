@@ -26,13 +26,14 @@ import ServiceSelector from '@/app/dashboard/schedule/components/calendar/servic
 import { api } from '@/lib/trpc/client';
 import { toast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
-import useScheduleStore from '@/hooks/filters/use-schedule-store';
+import { Loader } from '@/app/dashboard/schedule/components/calendar/loader';
 
 interface EventFormProps {
   isOpen: boolean;
   onClose: () => void;
   defaultDate?: Date;
   event?: CalendarEvent | null;
+  setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
 }
 
 export function EventForm({
@@ -40,6 +41,7 @@ export function EventForm({
   onClose,
   defaultDate = new Date(),
   event,
+  setEvents,
 }: EventFormProps) {
   const { data } = useSession();
   const user = data?.user;
@@ -100,23 +102,28 @@ export function EventForm({
     });
   }
 
-  const handleEventSave = async (eventData: Omit<CalendarEvent, 'id'>) => {
+  const handleEventSave = async (eventData: CalendarEvent) => {
     if (!isDoctor) return;
     try {
       if (event) {
-        await updateEventMutation.mutateAsync({ ...eventData, id: event.id });
+        await updateEventMutation.mutateAsync(eventData);
         toast({
           title: 'Подію успішно оновлено',
         });
+        setEvents((prevEvents) =>
+          prevEvents.map((prevEvent) =>
+            prevEvent.id === event.id ? eventData : prevEvent
+          )
+        );
       } else {
-        await addEventMutation.mutateAsync(eventData);
+        const newEvent = (await addEventMutation.mutateAsync(
+          eventData
+        )) as unknown as CalendarEvent;
+        setEvents((prevEvents) => [...prevEvents, newEvent]);
         toast({
-          title: 'Подію успішно додано',
+          title: 'Подію успішно створено',
         });
       }
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       toast({
         title: 'Помилка при збереженні події',
@@ -133,9 +140,9 @@ export function EventForm({
       toast({
         title: 'Подію успішно видалено',
       });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      setEvents((prevEvents) =>
+        prevEvents.filter((prevEvent) => prevEvent.id !== eventId)
+      );
     } catch (error) {
       toast({
         title: 'Помилка при видаленні події',
@@ -149,184 +156,199 @@ export function EventForm({
     e.preventDefault();
     if (!isDoctor) return;
     if (startDate && selectedService && doctorId && patientId && serviceId) {
-      handleEventSave({
+      const eventData: CalendarEvent = {
+        id: event ? event.id : '',
         title,
         startDate,
         endDate: calculateEndTime(startDate, selectedService.duration),
         doctorId,
         patientId,
         serviceId,
-      });
+      };
+      handleEventSave(eventData);
       onClose();
     }
   };
 
-  if (!event) return null;
+  if ((!event && !isLoading) || !isDoctor) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle className="text-lg">
-            {event ? 'Редагувати подію' : 'Додати подію'}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="space-y-1">
-            <Label htmlFor="title" className="text-sm">
-              Назва
-            </Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Введіть назву"
-              required
-              className="h-8 text-sm"
-            />
+        {isLoading ? (
+          <div className="min-h-[519px] flex justify-center items-center h-full">
+            <Loader />
           </div>
-          <div className="space-y-1">
-            <Label className="text-sm">Дата і час початку</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'w-full pl-3 text-left font-normal',
-                    !startDate && 'text-muted-foreground'
-                  )}
-                >
-                  {startDate ? (
-                    format(startDate, 'dd MMM yyyy HH:mm')
-                  ) : (
-                    <span>Оберіть дату і час</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <div className="sm:flex">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-lg">
+                {event ? 'Редагувати подію' : 'Додати подію'}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <Label htmlFor="title" className="text-sm">
+                  Назва
+                </Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Введіть назву"
+                  required
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-sm">Дата і час початку</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'w-full pl-3 text-left font-normal',
+                        !startDate && 'text-muted-foreground'
+                      )}
+                    >
+                      {startDate ? (
+                        format(startDate, 'dd MMM yyyy HH:mm')
+                      ) : (
+                        <span>Оберіть дату і час</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <div className="sm:flex">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={handleDateSelect}
+                        initialFocus
+                      />
+                      <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
+                        <ScrollArea className="w-64 sm:w-auto">
+                          <div className="flex sm:flex-col p-2">
+                            {Array.from({ length: 24 }, (_, i) => i).map(
+                              (hour) => (
+                                <Button
+                                  key={hour}
+                                  size="icon"
+                                  variant={
+                                    startDate.getHours() === hour
+                                      ? 'default'
+                                      : 'ghost'
+                                  }
+                                  className="sm:w-full shrink-0 aspect-square"
+                                  onClick={() =>
+                                    handleTimeChange('hour', hour.toString())
+                                  }
+                                >
+                                  {hour}
+                                </Button>
+                              )
+                            )}
+                          </div>
+                          <ScrollBar
+                            orientation="horizontal"
+                            className="sm:hidden"
+                          />
+                        </ScrollArea>
+                        <ScrollArea className="w-64 sm:w-auto">
+                          <div className="flex sm:flex-col p-2">
+                            {Array.from({ length: 12 }, (_, i) => i * 5).map(
+                              (minute) => (
+                                <Button
+                                  key={minute}
+                                  size="icon"
+                                  variant={
+                                    startDate.getMinutes() === minute
+                                      ? 'default'
+                                      : 'ghost'
+                                  }
+                                  className="sm:w-full shrink-0 aspect-square"
+                                  onClick={() =>
+                                    handleTimeChange(
+                                      'minute',
+                                      minute.toString()
+                                    )
+                                  }
+                                >
+                                  {minute.toString().padStart(2, '0')}
+                                </Button>
+                              )
+                            )}
+                          </div>
+                          <ScrollBar
+                            orientation="horizontal"
+                            className="sm:hidden"
+                          />
+                        </ScrollArea>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              {services && (
+                <div className="space-y-1">
+                  <Label className="text-sm">Послуга</Label>
+                  <ServiceSelector
+                    services={services}
+                    isLoading={isLoading}
+                    selectedValue={serviceId}
+                    setSelectedValue={setServiceId}
                   />
-                  <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
-                    <ScrollArea className="w-64 sm:w-auto">
-                      <div className="flex sm:flex-col p-2">
-                        {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
-                          <Button
-                            key={hour}
-                            size="icon"
-                            variant={
-                              startDate.getHours() === hour
-                                ? 'default'
-                                : 'ghost'
-                            }
-                            className="sm:w-full shrink-0 aspect-square"
-                            onClick={() =>
-                              handleTimeChange('hour', hour.toString())
-                            }
-                          >
-                            {hour}
-                          </Button>
-                        ))}
-                      </div>
-                      <ScrollBar
-                        orientation="horizontal"
-                        className="sm:hidden"
-                      />
-                    </ScrollArea>
-                    <ScrollArea className="w-64 sm:w-auto">
-                      <div className="flex sm:flex-col p-2">
-                        {Array.from({ length: 12 }, (_, i) => i * 5).map(
-                          (minute) => (
-                            <Button
-                              key={minute}
-                              size="icon"
-                              variant={
-                                startDate.getMinutes() === minute
-                                  ? 'default'
-                                  : 'ghost'
-                              }
-                              className="sm:w-full shrink-0 aspect-square"
-                              onClick={() =>
-                                handleTimeChange('minute', minute.toString())
-                              }
-                            >
-                              {minute.toString().padStart(2, '0')}
-                            </Button>
-                          )
-                        )}
-                      </div>
-                      <ScrollBar
-                        orientation="horizontal"
-                        className="sm:hidden"
-                      />
-                    </ScrollArea>
-                  </div>
                 </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          {services && (
-            <div className="space-y-1">
-              <Label className="text-sm">Послуга</Label>
-              <ServiceSelector
-                services={services}
-                isLoading={isLoading}
-                selectedValue={serviceId}
-                setSelectedValue={setServiceId}
-              />
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label className="text-sm">Лікар</Label>
-            <DentistSelector
-              selectedValue={doctorId}
-              setSelectedValue={setDoctorId}
-            />
-          </div>
-          <div>
-            <Label className="text-sm">Пацієнт</Label>
-            <PatientSelector
-              selectedValue={patientId}
-              setSelectedValue={setPatientId}
-            />
-          </div>
-          <div
-            className={cn(
-              `flex w-full`,
-              event ? 'justify-between' : 'justify-end'
-            )}
-          >
-            {event && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => handleEventDelete(event.id)}
-                className="h-8 text-sm"
+              )}
+              <div className="space-y-2">
+                <Label className="text-sm">Лікар</Label>
+                <DentistSelector
+                  selectedValue={doctorId}
+                  setSelectedValue={setDoctorId}
+                />
+              </div>
+              <div>
+                <Label className="text-sm">Пацієнт</Label>
+                <PatientSelector
+                  selectedValue={patientId}
+                  setSelectedValue={setPatientId}
+                />
+              </div>
+              <div
+                className={cn(
+                  `flex w-full`,
+                  event ? 'justify-between' : 'justify-end'
+                )}
               >
-                Видалити
-              </Button>
-            )}
+                {event && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => handleEventDelete(event.id)}
+                    className="h-8 text-sm"
+                  >
+                    Видалити
+                  </Button>
+                )}
 
-            <div className="flex self-end justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="h-8 text-sm"
-              >
-                Скасувати
-              </Button>
-              <Button type="submit" className="h-8 text-sm">
-                Зберегти
-              </Button>
-            </div>
-          </div>
-        </form>
+                <div className="flex self-end justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onClose}
+                    className="h-8 text-sm"
+                  >
+                    Скасувати
+                  </Button>
+                  <Button type="submit" className="h-8 text-sm">
+                    Зберегти
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

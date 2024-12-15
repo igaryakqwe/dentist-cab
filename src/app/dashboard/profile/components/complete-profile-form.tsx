@@ -148,7 +148,7 @@ const CompleteProfileForm = () => {
                 control={form.control}
                 name="birthDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col w-full">
+                  <FormItem className="flex flex-col w-full justify-end">
                     <FormLabel>Дата народження</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>

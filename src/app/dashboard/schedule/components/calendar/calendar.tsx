@@ -3,14 +3,19 @@
 import { useEffect, useState } from 'react';
 import { CalendarHeader } from './calendar-header';
 import { CalendarSidebar } from './calendar-sidebar';
-import { WeekView } from './week-view';
-import type { CalendarView } from '@/types/calendar';
+import WeekView from './week-view';
+import type { CalendarEvent, CalendarView } from '@/types/calendar';
 import { api } from '@/lib/trpc/client';
 import useScheduleStore from '@/hooks/filters/use-schedule-store';
 import { useQueryState } from 'nuqs';
+import { format } from 'date-fns';
 
 export function Calendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useQueryState<Date>('date', {
+    defaultValue: new Date(),
+    parse: (value) => (value ? new Date(value) : new Date()),
+    serialize: (value) => format(value, 'yyyy-MM-dd'),
+  });
   const [search, setSearch] = useQueryState('q');
   const [doctors, setDoctors] = useQueryState<string[]>('doctors', {
     defaultValue: [],
@@ -20,14 +25,8 @@ export function Calendar() {
   });
 
   const [view, setView] = useState<CalendarView>('week');
-  const { events, setEvents } = useScheduleStore();
 
   const { data, isLoading } = api.schedule.getEvents.useQuery();
-
-  useEffect(() => {
-    if (events && !data) return;
-    setEvents(data || []);
-  }, [data, events]);
 
   const handleNavigate = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
@@ -66,6 +65,7 @@ export function Calendar() {
           setSearch={setSearch}
         />
         <WeekView
+          data={data || []}
           currentDate={currentDate}
           isLoading={isLoading}
           search={search}
