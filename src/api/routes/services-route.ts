@@ -41,6 +41,10 @@ const servicesRoute = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      await ctx.db.event.deleteMany({
+        where: { serviceId: input.id },
+      });
+
       return ctx.db.service.delete({
         where: { id: input.id },
       });
