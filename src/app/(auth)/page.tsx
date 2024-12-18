@@ -15,8 +15,9 @@ const HomePage = async () => {
         <h1 className="text-2xl font-semibold tracking-tight">
           Вхід / Реєстрація
         </h1>
+        <p className="text-md">Введіть свою електронну пошту та пароль</p>
         <p className="text-sm text-muted-foreground">
-          Введіть свою електронну пошту та пароль
+          При введені нової пошти створюється новий аккаут
         </p>
       </div>
       <UserAuthForm />

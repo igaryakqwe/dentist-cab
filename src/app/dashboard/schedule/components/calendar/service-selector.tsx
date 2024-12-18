@@ -36,14 +36,16 @@ const ServiceSelector: FC<ServiceSelectorProps> = ({
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const filteredServices = services?.filter((service) =>
-    `${service.name}`.toLowerCase().includes(searchTerm.toLowerCase())
+    service.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const selectedService = services?.find(
     (service) => service.id === selectedValue
   );
 
-  const selectedServiceValue = `${selectedService?.name} - ${selectedService?.duration} хв`;
+  const selectedServiceValue = selectedService
+    ? `${selectedService.name} - ${selectedService.duration} хв`
+    : 'Обрати послугу...';
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -54,7 +56,7 @@ const ServiceSelector: FC<ServiceSelectorProps> = ({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedValue ? selectedServiceValue : 'Обрати послугу...'}
+          {selectedServiceValue}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -73,11 +75,12 @@ const ServiceSelector: FC<ServiceSelectorProps> = ({
               {filteredServices?.map((service) => (
                 <CommandItem
                   key={service.id}
-                  value={service.id}
-                  onSelect={(currentValue) => {
-                    setSelectedValue(
-                      currentValue === selectedValue ? '' : currentValue
+                  value={service.name}
+                  onSelect={(value) => {
+                    const foundService = services.find(
+                      (service) => service.name === value
                     );
+                    setSelectedValue(foundService?.id as string);
                     setOpen(false);
                   }}
                 >

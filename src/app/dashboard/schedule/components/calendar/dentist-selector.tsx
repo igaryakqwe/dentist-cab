@@ -36,16 +36,10 @@ const PatientSelector: FC<DentistSelectorProps> = ({
 
   const { data: doctors, isLoading } = api.users.getEmployee.useQuery();
 
-  const filteredPatients = doctors?.filter((doctor) =>
-    `${doctor.name} ${doctor.surname}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
-  const selectedPatient = doctors?.find(
+  const selectedDoctor = doctors?.find(
     (patient) => patient.id === selectedValue
   );
-  const selectedPatientName = `${selectedPatient?.name} ${selectedPatient?.surname}`;
+  const selectedPatientName = `${selectedDoctor?.name} ${selectedDoctor?.surname}`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,22 +66,23 @@ const PatientSelector: FC<DentistSelectorProps> = ({
             {isLoading && <CommandLoading />}
             <CommandEmpty>Не знайдено</CommandEmpty>
             <CommandGroup>
-              {filteredPatients?.map((patient) => (
+              {doctors?.map((doctor) => (
                 <CommandItem
-                  key={patient.id}
-                  value={patient.id}
+                  key={doctor.id}
+                  value={`${doctor.name} ${doctor.surname}`}
                   onSelect={(currentValue) => {
-                    setSelectedValue(
-                      currentValue === selectedValue ? '' : currentValue
+                    const foundDentist = doctors?.find((p) =>
+                      `${p.name} ${p.surname}`.includes(currentValue)
                     );
+                    setSelectedValue(foundDentist?.id || '');
                     setOpen(false);
                   }}
                 >
-                  {patient.name} {patient.surname}
+                  {doctor.name} {doctor.surname}
                   <Check
                     className={cn(
                       'ml-auto',
-                      selectedValue === patient.id ? 'opacity-100' : 'opacity-0'
+                      selectedValue === doctor.id ? 'opacity-100' : 'opacity-0'
                     )}
                   />
                 </CommandItem>

@@ -36,12 +36,6 @@ const PatientSelector: FC<PatientSelectorProps> = ({
 
   const { data: patients, isLoading } = api.users.getPatients.useQuery();
 
-  const filteredPatients = patients?.filter((doctor) =>
-    `${doctor.name} ${doctor.surname}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
   const selectedPatient = patients?.find(
     (patient) => patient.id === selectedValue
   );
@@ -63,7 +57,7 @@ const PatientSelector: FC<PatientSelectorProps> = ({
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput
-            placeholder="Search doctors..."
+            placeholder="Шукати пацієнта..."
             className="h-9"
             value={searchTerm}
             onValueChange={setSearchTerm}
@@ -72,14 +66,15 @@ const PatientSelector: FC<PatientSelectorProps> = ({
             {isLoading && <CommandLoading />}
             <CommandEmpty>Не знайдено</CommandEmpty>
             <CommandGroup>
-              {filteredPatients?.map((patient) => (
+              {patients?.map((patient) => (
                 <CommandItem
                   key={patient.id}
-                  value={patient.id}
+                  value={`${patient.name} ${patient.surname}`}
                   onSelect={(currentValue) => {
-                    setSelectedValue(
-                      currentValue === selectedValue ? '' : currentValue
+                    const foundPatient = patients?.find((p) =>
+                      `${p.name} ${p.surname}`.includes(currentValue)
                     );
+                    setSelectedValue(foundPatient?.id || '');
                     setOpen(false);
                   }}
                 >
