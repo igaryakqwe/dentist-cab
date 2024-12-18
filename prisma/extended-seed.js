@@ -3,6 +3,13 @@ const { faker } = require('@faker-js/faker');
 const prisma = new PrismaClient();
 
 async function main() {
+  console.log('Clearing database...');
+
+  // Clear existing data
+  await prisma.event.deleteMany();
+  await prisma.service.deleteMany();
+  await prisma.user.deleteMany();
+
   console.log('Seeding database...');
 
   // Generate 20 doctors with ADMIN or MANAGER roles
@@ -58,8 +65,10 @@ async function main() {
       id: faker.string.uuid(),
       name: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
-      duration: faker.number.int({ min: 30, max: 120 }),
-      price: faker.number.int({ min: 50, max: 25000 }),
+      duration: faker.helpers.arrayElement([30, 60, 90, 120]),
+      price: faker.helpers.arrayElement([
+        250, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 10000, 25000,
+      ]),
     });
   }
 
